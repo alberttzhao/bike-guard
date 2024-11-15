@@ -1,0 +1,13 @@
+# Target labels
+ bootloader
+# Source files and their labels
+/Users/margheritapiana/esp/esp-idf/Marghe_example/04-Code-Examples-main/senior_desing/build/CMakeFiles/bootloader
+/Users/margheritapiana/esp/esp-idf/Marghe_example/04-Code-Examples-main/senior_desing/build/CMakeFiles/bootloader.rule
+/Users/margheritapiana/esp/esp-idf/Marghe_example/04-Code-Examples-main/senior_desing/build/CMakeFiles/bootloader-complete.rule
+/Users/margheritapiana/esp/esp-idf/Marghe_example/04-Code-Examples-main/senior_desing/build/bootloader-prefix/src/bootloader-stamp/bootloader-build.rule
+/Users/margheritapiana/esp/esp-idf/Marghe_example/04-Code-Examples-main/senior_desing/build/bootloader-prefix/src/bootloader-stamp/bootloader-configure.rule
+/Users/margheritapiana/esp/esp-idf/Marghe_example/04-Code-Examples-main/senior_desing/build/bootloader-prefix/src/bootloader-stamp/bootloader-download.rule
+/Users/margheritapiana/esp/esp-idf/Marghe_example/04-Code-Examples-main/senior_desing/build/bootloader-prefix/src/bootloader-stamp/bootloader-install.rule
+/Users/margheritapiana/esp/esp-idf/Marghe_example/04-Code-Examples-main/senior_desing/build/bootloader-prefix/src/bootloader-stamp/bootloader-mkdir.rule
+/Users/margheritapiana/esp/esp-idf/Marghe_example/04-Code-Examples-main/senior_desing/build/bootloader-prefix/src/bootloader-stamp/bootloader-patch.rule
+/Users/margheritapiana/esp/esp-idf/Marghe_example/04-Code-Examples-main/senior_desing/build/bootloader-prefix/src/bootloader-stamp/bootloader-update.rule
