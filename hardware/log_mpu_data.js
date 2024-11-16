@@ -1,9 +1,9 @@
-const { spawn } = require('child_process');
-const fs = require('fs');
-const path = require('path');
-const express = require ('express');
+import { spawn } from 'child_process';
+import fs from 'fs';
+import path from 'path';
+import express from 'express';
 const app = express();
-const port = 3000;
+// const port = 3000;
 
 app.use(express.json());
 // Path to the Python script
@@ -41,6 +41,7 @@ function logDataFromPython() {
 
 // Start logging data
 logDataFromPython();
+logDataToCSV();
 const csvFilePath = path.join(__dirname, 'mpu_data_log.csv');
 const csvStream = fs.createWriteStream(csvFilePath, { flags: 'a' });
 
