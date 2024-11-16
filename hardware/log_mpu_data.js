@@ -51,7 +51,8 @@ function logDataToCSV() {
     pythonProcess.stdout.on('data', (data) => {
         const output = data.toString();
         console.log(output);
-        const csvData = output.split(' ').join(',') + '\n'; // Convert space-separated data to CSV format
+        //const csvData = output.split(' ').join(',') + '\n'; // Convert space-separated data to CSV format
+        const csvData = output.split(',') + '\n'; // Convert space-separated data to CSV format
         csvStream.write(csvData);
     });
 
