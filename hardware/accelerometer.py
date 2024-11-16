@@ -78,12 +78,12 @@ try:
         print(f"Gyroscope: X = {data['gyro']['x']:.2f}°/s, Y = {data['gyro']['y']:.2f}°/s, Z = {data['gyro']['z']:.2f}°/s")
         print(f"Pitch: {pitch:.2f}°, Roll: {roll:.2f}°")
         print("------")
-	data_send = {'X': data['accel']['x'], 'Y': data['accel']['y'], 'Z': data['accel']['z'], 'Pitch' : pitch, 'Roll' : roll}
-        response = requests.post("http://localhost:3000/data", json=data)
-	if response.status_code == 200:
-		print("Data sent successfully")
-	else:
-		print("Error sending data: ", response.status_code)
-	time.sleep(1)
+        data_send = {'X': data['accel']['x'], 'Y': data['accel']['y'], 'Z': data['accel']['z'], 'Pitch' : pitch, 'Roll' : roll}
+        response = requests.post("http://localhost:3000/data", json=data_send)
+        if response.status_code == 200:
+            print("Data sent successfully")
+        else:
+            print("Error sending data: ", response.status_code)
+        time.sleep(1)
 except KeyboardInterrupt:
     print("Measurement stopped by User")

@@ -37,3 +37,29 @@ function logDataFromPython() {
 
 // Start logging data
 logDataFromPython();
+const csvFilePath = path.join(__dirname, 'mpu_data_log.csv');
+const csvStream = fs.createWriteStream(csvFilePath, { flags: 'a' });
+
+// Function to log data from Python script to CSV
+function logDataToCSV() {
+    const pythonProcess = spawn('python3', [pythonScriptPath]);
+
+    pythonProcess.stdout.on('data', (data) => {
+        const output = data.toString();
+        console.log(output);
+        const csvData = output.split(' ').join(',') + '\n'; // Convert space-separated data to CSV format
+        csvStream.write(csvData);
+    });
+
+    pythonProcess.stderr.on('data', (error) => {
+        console.error(`Error: ${error}`);
+    });
+
+    pythonProcess.on('close', (code) => {
+        console.log(`Python script exited with code ${code}`);
+        csvStream.end();
+    });
+}
+
+// Start logging data to CSV
+logDataToCSV();
