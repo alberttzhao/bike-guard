@@ -79,7 +79,10 @@ try:
 
         data_send = {data['accel']['x'], data['accel']['y'], data['accel']['z'], pitch, roll}
         response = requests.post("http://localhost:3000/data", json=data_send)
-     
+        if response.status_code == 200:
+            ciao=1
+        else:
+            print("Error sending data: ", response.status_code)
         time.sleep(1)
 except KeyboardInterrupt:
     print("Measurement stopped by User")
