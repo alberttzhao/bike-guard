@@ -73,11 +73,10 @@ try:
     while True:
         data = read_mpu_data()
         pitch, roll = calculate_pitch_roll(data["accel"])
+        
+        #data adapted to work well for csv file
+        print(f"{data['accel']['x']:.2f}, {data['accel']['y']:.2f}, {data['accel']['z']:.2f}, {data['gyro']['x']:.2f}, {data['gyro']['y']:.2f}, {data['gyro']['z']:.2f}, {pitch:.2f}, {roll:.2f}°")
 
-        print(f"Accelerometer: X = {data['accel']['x']:.2f}g, Y = {data['accel']['y']:.2f}g, Z = {data['accel']['z']:.2f}g")
-        print(f"Gyroscope: X = {data['gyro']['x']:.2f}°/s, Y = {data['gyro']['y']:.2f}°/s, Z = {data['gyro']['z']:.2f}°/s")
-        print(f"Pitch: {pitch:.2f}°, Roll: {roll:.2f}°")
-        print("------")
         data_send = {'X': data['accel']['x'], 'Y': data['accel']['y'], 'Z': data['accel']['z'], 'Pitch' : pitch, 'Roll' : roll}
         response = requests.post("http://localhost:3000/data", json=data_send)
         if response.status_code == 200:
