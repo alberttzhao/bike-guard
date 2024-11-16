@@ -1,9 +1,8 @@
-const { spawn } = require('child_process');
-const fs = require('fs');
-const path = require('path');
-const express = require ('express');
+import { spawn } from 'child_process';
+import fs from 'fs';
+import path from 'path';
+import express from 'express';
 const app = express();
-const port = 3000;
 
 app.use(express.json());
 // Path to the Python script
@@ -19,7 +18,8 @@ const logStream = fs.createWriteStream(logFilePath, { flags: 'a' });
 function logDataFromPython() {
     // Spawn a child process to run the Python script
     const pythonProcess = spawn('python3', [pythonScriptPath]);
-
+    csvStream = fs.createWriteStream(csvFilePath, { flags: 'a' });
+    const pythonProcess = spawn('python3', [pythonScriptPath]);
     // Listen to data events on stdout
     pythonProcess.stdout.on('data', (data) => {
         const output = data.toString();  // Convert buffer to string
@@ -42,7 +42,7 @@ function logDataFromPython() {
 // Start logging data
 logDataFromPython();
 const csvFilePath = path.join(__dirname, 'mpu_data_log.csv');
-const csvStream = fs.createWriteStream(csvFilePath, { flags: 'a' });
+let csvStream;
 
 // Function to log data from Python script to CSV
 function logDataToCSV() {
@@ -52,7 +52,6 @@ function logDataToCSV() {
         const output = data.toString();
         console.log(output);
         const csvData = output.split(' ').join(',') + '\n'; // Convert space-separated data to CSV format
-        //const csvData = output.split(',') + '\n'; // Convert space-separated data to CSV format
         csvStream.write(csvData);
     });
 
