@@ -60,6 +60,7 @@ function logDataToCSV() {
         console.log(output);
         const csvData = output.trim() + '\n';// Convert space-separated data to CSV format
         print(csvData);
+        console.log(csvData);
         csvStream.write(csvData);
     });
 
@@ -76,3 +77,4 @@ function logDataToCSV() {
 
 // Start logging data to CSV
 logDataToCSV();
+console.log('Data logging started...');
