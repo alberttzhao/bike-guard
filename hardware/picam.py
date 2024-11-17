@@ -1,25 +1,22 @@
-import picamera
-from time import sleep
+import cv2
 
-# Initialize the camera
-camera = picamera.PiCamera()
+# Open the camera using libcamera
+camera = cv2.VideoCapture(0)  # '0' is the default camera device index
+
+if not camera.isOpened():
+    print("Error: Could not open camera.")
+    exit()
 
 try:
-    # Set camera properties
-    camera.resolution = (1920, 1080)  # Full HD resolution
-    camera.framerate = 30
-
-    # Start camera preview
-    camera.start_preview()
-
-    # Wait before taking a picture
-    sleep(5)
-
-    # Capture an image
-    camera.capture('/home/pi/Desktop/image.jpg')
-    print("Image captured!")
+    # Capture a single frame
+    ret, frame = camera.read()
+    if ret:
+        # Save the frame as an image
+        cv2.imwrite('/home/pi/Desktop/image.jpg', frame)
+        print("Image captured!")
+    else:
+        print("Error: Failed to capture image.")
 
 finally:
-    # Close the camera
-    camera.stop_preview()
-    camera.close()
+    # Release the camera
+    camera.release()
