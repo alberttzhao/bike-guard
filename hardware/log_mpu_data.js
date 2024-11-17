@@ -1,6 +1,6 @@
-import { spawn } from 'child_process'; //library that starts the python script
-import fs from 'fs';
-import path from 'path';
+const { spawn } = require('child_process'); //library that starts the python script
+const fs = require('fs');
+const path = require('path');
 
 //const express = require ('express');
 //const app = express();
@@ -57,9 +57,10 @@ function logDataToCSV() {
     pythonProcess.stdout.on('data', (data) => {
         const output = data.toString();
         console.log(output);
-        const csvData = output.trim() + '\n'; // Use the provided comma-separated data format directly
+        const csvData = output.trim() + '\n';// Convert space-separated data to CSV format
         csvStream.write(csvData);
     });
+
 
     pythonProcess.stderr.on('data', (error) => {
         console.error(`Error: ${error}`);
