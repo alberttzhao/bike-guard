@@ -2,6 +2,7 @@ const { spawn } = require('child_process'); //library that starts the python scr
 const fs = require('fs');
 const path = require('path');
 
+
 //const express = require ('express');
 //const app = express();
 //const port = 3000;
@@ -58,6 +59,7 @@ function logDataToCSV() {
         const output = data.toString();
         console.log(output);
         const csvData = output.trim() + '\n';// Convert space-separated data to CSV format
+        print(csvData);
         csvStream.write(csvData);
     });
 
