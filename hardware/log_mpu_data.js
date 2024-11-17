@@ -1,15 +1,13 @@
-const { spawn } = require('child_process');
-const fs = require('fs');
-const path = require('path');
-<<<<<<< HEAD
+import { spawn } from 'child_process'; //library that starts the python script
+import fs from 'fs';
+import path from 'path';
+
 //const express = require ('express');
 //const app = express();
 //const port = 3000;
 
 //app.use(express.json());
-=======
-const express = req
->>>>>>> parent of 8ec2dd1 (Update log_mpu_data.js)
+
 // Path to the Python script
 const pythonScriptPath = path.join(__dirname, 'accelerometer.py');
 
@@ -52,16 +50,16 @@ const csvStream = fs.createWriteStream(csvFilePath, { flags: 'a' });
 function logDataToCSV() {
     const pythonProcess = spawn('python3', [pythonScriptPath]);
 
-    pythonProcess.stdout.on('data', (data) => {
-        const output = data.toString();
-        console.log(output);
-        const csvData = output.split(' ').join(',') + '\n'; // Convert space-separated data to CSV format
-        csvStream.write(csvData);
-    });
-
     pythonProcess.on('error', (err) => {
         console.error('Failed to start child process:', err);
       });
+
+    pythonProcess.stdout.on('data', (data) => {
+        const output = data.toString();
+        console.log(output);
+        const csvData = output.trim() + '\n'; // Use the provided comma-separated data format directly
+        csvStream.write(csvData);
+    });
 
     pythonProcess.stderr.on('data', (error) => {
         console.error(`Error: ${error}`);
