@@ -1,6 +1,6 @@
 const express = require('express');
 const app = express();
-const port = 3000; // You can choose any available port
+const port = 8000; // You can choose any available port
 
 app.use(express.static('public'));
 
@@ -9,7 +9,7 @@ app.get('/', (req, res) => {
 });
 
 app.listen(port, () => {
-    console.log(`Server running at http://192.168.1.37:${port}`);
+    console.log(`Server running at http://128.197.180.227:${port}`);
 });
 
 
