@@ -1,11 +1,15 @@
 const { spawn } = require('child_process');
 const fs = require('fs');
 const path = require('path');
+<<<<<<< HEAD
 //const express = require ('express');
 //const app = express();
 //const port = 3000;
 
 //app.use(express.json());
+=======
+const express = req
+>>>>>>> parent of 8ec2dd1 (Update log_mpu_data.js)
 // Path to the Python script
 const pythonScriptPath = path.join(__dirname, 'accelerometer.py');
 
