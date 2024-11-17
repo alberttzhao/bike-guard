@@ -76,12 +76,9 @@ try:
         pitch, roll = calculate_pitch_roll(data["accel"])
         
         #data adapted to work well for csv 
-        #print(f"{data['accel']['x']:.2f}, {data['accel']['y']:.2f}, {data['accel']['z']:.2f}, {data['gyro']['x']:.2f}, {data['gyro']['y']:.2f}, {data['gyro']['z']:.2f}, {pitch:.2f}, {roll:.2f}")
         print(f"{data['accel']['x']:.2f}, {data['accel']['y']:.2f}, {data['accel']['z']:.2f}, {data['gyro']['x']:.2f}, {data['gyro']['y']:.2f}, {data['gyro']['z']:.2f}, {pitch:.2f}, {roll:.2f}")
         sys.stdout.flush()  # Add this line to flush the output buffer
 
-        #data_send = {data['accel']['x'], data['accel']['y'], data['accel']['z'], pitch, roll}
-        #response = requests.post("http://localhost:3000/data", json=data_send)
         time.sleep(1)
 except KeyboardInterrupt:
     print("Measurement stopped by User")
