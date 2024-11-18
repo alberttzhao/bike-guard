@@ -3,6 +3,11 @@ import time
 import math
 import requests
 import sys
+import gpiozero
+
+from gpiozero import Buzzer
+from time import sleep
+
 
 # Define the MPU-6050 I2C address and registers
 MPU6050_ADDRESS = 0x68
@@ -69,6 +74,36 @@ def calculate_pitch_roll(accel):
 # Initialize MPU
 init_mpu()
 
+
+#Buzzer code
+
+# Initialize the buzzer
+buzzer = Buzzer(17)
+
+# Option 1: Turn the buzzer on and off in a loop
+print("Buzzer on/off loop. Press Ctrl+C to stop.")
+try:
+    while True:
+        buzzer.on()  # Turn on the buzzer
+        sleep(1)     # Wait for 1 second
+        buzzer.off() # Turn off the buzzer
+        sleep(1)     # Wait for 1 second
+except KeyboardInterrupt:
+    print("\nExiting program.")
+
+# Option 2: Use beep for automatic on/off toggling
+print("Switching to beep mode.")
+try:
+    while True:
+        buzzer.beep(on_time=0.5, off_time=0.5, n=None, background=True)
+        sleep(10)  # Beep for 10 seconds
+        buzzer.off()
+        break
+except KeyboardInterrupt:
+    print("\nExiting program.")
+    
+    
+    
 # Collect data
 try:
     while True:
