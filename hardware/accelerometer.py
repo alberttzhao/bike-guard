@@ -86,7 +86,7 @@ def calculate_pitch_roll(accel):
         if pitch > 5 or roll > 10:
             print("Buzzer on")
             buzzer.on()  # Turn on the buzzer
-            #sleep(1)     # Wait for 1 second
+            sleep(1)     # Wait for 1 second
             #buzzer.off() # Turn off the buzzer
             #sleep(1)     # Wait for 1 second
             
