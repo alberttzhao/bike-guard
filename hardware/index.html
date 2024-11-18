@@ -17,7 +17,7 @@
     video.src = URL.createObjectURL(mediaSource);
 
     mediaSource.addEventListener("sourceopen", () => {
-      const sourceBuffer = mediaSource.addSourceBuffer('video/mp4; codecs="avc1.42E01E"');
+      const sourceBuffer = mediaSource.addSourceBuffer('video/mp4; codecs="h264"');
       sourceBuffer.onerror = (e) => {
         console.error("SourceBuffer error:", e);
       };
