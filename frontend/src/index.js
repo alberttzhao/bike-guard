@@ -1,15 +1,15 @@
 import React from 'react';
 import ReactDOM from 'react-dom';
-import './index.css';
+import { ThemeProvider, createTheme } from '@mui/material/styles';
 import App from './App';
-import * as serviceWorkerRegistration from './serviceWorkerRegistration';
+
+const theme = createTheme();
 
 ReactDOM.render(
   <React.StrictMode>
-    <App />
+    <ThemeProvider theme={theme}>
+      <App />
+    </ThemeProvider>
   </React.StrictMode>,
   document.getElementById('root')
 );
-
-// Register the service worker
-serviceWorkerRegistration.register();
