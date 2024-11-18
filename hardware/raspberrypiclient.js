@@ -23,7 +23,7 @@ ws.on("open", () => {
   // Send video data to server
   raspivid.stdout.on("data", (data) => {
     ws.send(data);
-    console.log("successfully sent some data");
+    console.log(`Data: ${data}`);
   });
 
   raspivid.stderr.on("data", (data) => {
