@@ -74,7 +74,7 @@ def calculate_pitch_roll(accel):
     # Initialize the buzzer
     buzzer = Buzzer(17)
 
-    print("Buzzer on/off loop. Press Ctrl+C to stop.")
+    #print("Buzzer on/off loop. Press Ctrl+C to stop.")
     try:
         #while True:
         #  buzzer.on()  # Turn on the buzzer
@@ -83,12 +83,12 @@ def calculate_pitch_roll(accel):
         #  sleep(1)     # Wait for 1 second
         
         #Pick a treshold value to trigger the buzzer:    
-        if pitch > 3 or roll < -4:
+        if pitch > 5 or roll > 10:
             print("Buzzer on")
-            #buzzer.on()  # Turn on the buzzer
-            #sleep(1)     # Wait for 1 second
-            #buzzer.off() # Turn off the buzzer
-            #sleep(1)     # Wait for 1 second
+            buzzer.on()  # Turn on the buzzer
+            sleep(1)     # Wait for 1 second
+            buzzer.off() # Turn off the buzzer
+            sleep(1)     # Wait for 1 second
             
     except KeyboardInterrupt:
         print("\nExiting program.")
