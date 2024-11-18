@@ -68,6 +68,30 @@ def calculate_pitch_roll(accel):
 
     pitch = math.atan2(ay, math.sqrt(ax * ax + az * az)) * (180 / math.pi)
     roll = math.atan2(-ax, az) * (180 / math.pi)
+    
+    #--------------Buzzer code start
+
+    # Initialize the buzzer
+    buzzer = Buzzer(17)
+
+    print("Buzzer on/off loop. Press Ctrl+C to stop.")
+    try:
+        #while True:
+        #  buzzer.on()  # Turn on the buzzer
+        #   sleep(1)     # Wait for 1 second
+        #  buzzer.off() # Turn off the buzzer
+        #  sleep(1)     # Wait for 1 second
+        
+        #Pick a treshold value to trigger the buzzer:    
+        if pitch > 3 or roll < -4:
+            buzzer.on()  # Turn on the buzzer
+            sleep(1)     # Wait for 1 second
+            #buzzer.off() # Turn off the buzzer
+            #sleep(1)     # Wait for 1 second
+            
+    except KeyboardInterrupt:
+        print("\nExiting program.")
+    #--------------Buzzer code end
 
     return pitch, roll
 
@@ -75,32 +99,6 @@ def calculate_pitch_roll(accel):
 init_mpu()
 
 
-#Buzzer code
-
-# Initialize the buzzer
-buzzer = Buzzer(17)
-
-# Option 1: Turn the buzzer on and off in a loop
-print("Buzzer on/off loop. Press Ctrl+C to stop.")
-try:
-    while True:
-        buzzer.on()  # Turn on the buzzer
-        sleep(1)     # Wait for 1 second
-        buzzer.off() # Turn off the buzzer
-        sleep(1)     # Wait for 1 second
-except KeyboardInterrupt:
-    print("\nExiting program.")
-
-# Option 2: Use beep for automatic on/off toggling
-print("Switching to beep mode.")
-try:
-    while True:
-        buzzer.beep(on_time=0.5, off_time=0.5, n=None, background=True)
-        sleep(10)  # Beep for 10 seconds
-        buzzer.off()
-        break
-except KeyboardInterrupt:
-    print("\nExiting program.")
     
     
     
