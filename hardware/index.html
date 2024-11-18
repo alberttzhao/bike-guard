@@ -18,8 +18,15 @@
 
     mediaSource.addEventListener("sourceopen", () => {
       const sourceBuffer = mediaSource.addSourceBuffer('video/mp4; codecs="avc1.42E01E"');
+      sourceBuffer.onerror = (e) => {
+        console.error("SourceBuffer error:", e);
+      };
       socket.onmessage = (event) => {
-        sourceBuffer.appendBuffer(new Uint8Array(event.data));
+        try {
+          sourceBuffer.appendBuffer(new Uint8Array(event.data));
+        } catch (err) {
+          console.error("Append buffer error:", err);
+        }
       };
     });
 

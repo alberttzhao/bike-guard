@@ -10,8 +10,8 @@ ws.on("open", () => {
   // Use raspivid or libcamera-vid for video capture
   const raspivid = spawn("libcamera-vid", [
     "--output", "-",        // Stream to stdout
-    "--width", "1280",      // Resolution
-    "--height", "720",      // Resolution
+    "--width", "640",      // Resolution
+    "--height", "360",      // Resolution
     "--framerate", "30",    // Frame rate
     "--timeout", "0",       // No timeout, continuous streaming
     "--codec", "h264"       // Encoding format
