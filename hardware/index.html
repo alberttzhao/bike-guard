@@ -7,31 +7,50 @@
 </head>
 <body>
   <h1>Live Video Stream</h1>
-  <video id="video"></video>
+  <video id="video" controls></video>
 
   <script>
     const video = document.getElementById("video");
-    const socket = new WebSocket("ws://128.197.180.190:3000"); // Replace <SERVER_IP> with your server's IP
 
-    const mediaSource = new MediaSource();
-    video.src = URL.createObjectURL(mediaSource);
+    // WebSocket connection (use wss:// if using HTTPS for the page)
+    const socket = new WebSocket("ws://128.197.180.190:3000");
 
-    mediaSource.addEventListener("sourceopen", () => {
-      const sourceBuffer = mediaSource.addSourceBuffer('video/mp4; codecs="h264"');
-      sourceBuffer.onerror = (e) => {
-        console.error("SourceBuffer error:", e);
-      };
-      socket.onmessage = (event) => {
-        try {
-          sourceBuffer.appendBuffer(new Uint8Array(event.data));
-        } catch (err) {
-          console.error("Append buffer error:", err);
-        }
-      };
-    });
+    // Check if the browser supports MediaSource
+    if ('MediaSource' in window) {
+      const mediaSource = new MediaSource();
+      video.src = URL.createObjectURL(mediaSource);
 
-    socket.onopen = () => console.log("Connected to server");
-    socket.onclose = () => console.log("Disconnected from server");
+      mediaSource.addEventListener("sourceopen", () => {
+        const sourceBuffer = mediaSource.addSourceBuffer('video/mp4; codecs="h264"');
+        
+        sourceBuffer.onerror = (e) => {
+          console.error("SourceBuffer error:", e);
+        };
+
+        socket.onmessage = (event) => {
+          try {
+            console.log('Received data:', event.data);
+            sourceBuffer.appendBuffer(new Uint8Array(event.data));
+          } catch (err) {
+            console.error("Append buffer error:", err);
+          }
+        };
+      });
+    } else {
+      console.error('MediaSource API not supported in this browser.');
+    }
+
+    socket.onopen = () => {
+      console.log("WebSocket connection established.");
+    };
+
+    socket.onclose = () => {
+      console.log("WebSocket connection closed.");
+    };
+
+    socket.onerror = (error) => {
+      console.error("WebSocket error:", error);
+    };
   </script>
 </body>
 </html>
