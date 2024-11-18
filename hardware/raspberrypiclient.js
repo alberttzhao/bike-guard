@@ -12,10 +12,13 @@ ws.on("open", () => {
     "--output", "-",        // Stream to stdout
     "--width", "640",      // Resolution
     "--height", "360",      // Resolution
-    "--framerate", "30",    // Frame rate
-    "--timeout", "0",       // No timeout, continuous streaming
-    "--codec", "h264"       // Encoding format
+    "--framerate", "15",    // Frame rate
+    "--timeout", "10000",       // No timeout, continuous streaming
+    "--codec", "h264",       // Encoding format
+    "--shutter", "5000",       // exposure time in microseconds
+    "--gain", "4"           // analog gain
   ]);
+
 
   // Send video data to server
   raspivid.stdout.on("data", (data) => {
