@@ -1,0 +1,30 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Video Stream</title>
+</head>
+<body>
+  <h1>Live Video Stream</h1>
+  <video id="video" autoplay controls></video>
+
+  <script>
+    const video = document.getElementById("video");
+    const socket = new WebSocket("ws://128.197.180.190:3000"); // Replace <SERVER_IP> with your server's IP
+
+    const mediaSource = new MediaSource();
+    video.src = URL.createObjectURL(mediaSource);
+
+    mediaSource.addEventListener("sourceopen", () => {
+      const sourceBuffer = mediaSource.addSourceBuffer('video/mp4; codecs="avc1.42E01E"');
+      socket.onmessage = (event) => {
+        sourceBuffer.appendBuffer(new Uint8Array(event.data));
+      };
+    });
+
+    socket.onopen = () => console.log("Connected to server");
+    socket.onclose = () => console.log("Disconnected from server");
+  </script>
+</body>
+</html>
