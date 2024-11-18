@@ -87,8 +87,8 @@ def calculate_pitch_roll(accel):
             print("Buzzer on")
             buzzer.on()  # Turn on the buzzer
             sleep(1)     # Wait for 1 second
-            buzzer.off() # Turn off the buzzer
-            sleep(1)     # Wait for 1 second
+            #buzzer.off() # Turn off the buzzer
+            #sleep(1)     # Wait for 1 second
             
     except KeyboardInterrupt:
         print("\nExiting program.")
