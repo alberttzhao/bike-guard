@@ -1,33 +1,50 @@
-import React, { useRef, useEffect } from "react";
-import { Card, CardContent, Typography } from "@mui/material";
+import React, { useRef, useEffect } from 'react';
+import './Components.css';
 
 function CameraFeed() {
   const videoRef = useRef(null);
 
   useEffect(() => {
-    navigator.mediaDevices
-      .getUserMedia({ video: true })
-      .then((stream) => {
-        videoRef.current.srcObject = stream;
-      })
-      .catch((err) => {
-        console.error("Error accessing camera:", err);
-      });
+    // Function to start the video stream
+    const startStream = async () => {
+      try {
+        // Replace this URL with your Raspberry Pi's video stream URL
+        const videoUrl = 'http://your-raspberry-pi-url/video-stream';
+        
+        if (videoRef.current) {
+          videoRef.current.src = videoUrl;
+        }
+      } catch (error) {
+        console.error('Error starting video stream:', error);
+      }
+    };
+
+    startStream();
   }, []);
 
   return (
-    <Card>
-      <CardContent>
-        <Typography variant="h6" gutterBottom>
-          Live Camera Feed
-        </Typography>
+    <div className="camera-feed-container">
+      <div className="camera-header">
+        <h2 className="section-title">Live View</h2>
+        <div className="camera-controls">
+          <button className="camera-control-btn">
+            <span className="material-icons">volume_up</span>
+          </button>
+          <button className="camera-control-btn">
+            <span className="material-icons">fullscreen</span>
+          </button>
+        </div>
+      </div>
+      <div className="video-container">
         <video
           ref={videoRef}
           autoPlay
-          style={{ width: "100%", borderRadius: "10px" }}
+          playsInline
+          muted
+          className="video-player"
         />
-      </CardContent>
-    </Card>
+      </div>
+    </div>
   );
 }
 
