@@ -1,42 +1,70 @@
-# Bike Guard Project
+# BikeGuard
 
-## Project Overview
+A bike security system using Raspberry Pi for movement detection and notifications.
 
-The Bike Guard project is a security system designed to protect bikes from theft. It consists of a web application with a **React.js** frontend, a **Node.js** backend, and code for a **Raspberry Pi** device that detects and reports suspicious activities.
+## Setup Instructions
 
----
+### Backend Setup
+1. Create and activate a virtual environment:
+```bash
+# On Windows:
+python -m venv venv
+venv\Scripts\activate
 
-## File Structure
+# On macOS/Linux:
+python3 -m venv venv
+source venv/bin/activate
+```
 
-The project is organized into three main directories: `frontend`, `backend`, and `raspberry-pi`. Each directory serves a specific purpose, as described below.
+2. Install required dependencies:
+```bash
+pip install -r requirements.txt
+```
 
-```plaintext
-bike-guard-project/
-├── frontend/               # React.js frontend
-│   ├── node_modules/       # Frontend dependencies (ignored by Git)
-│   ├── public/             # Public assets for the frontend
-│   ├── src/                # Source files for React components
-│   │   ├── components/     # Reusable React components
-│   │   ├── App.js          # Main React component
-│   │   └── index.js        # Entry point for React
-│   ├── package.json        # Lists frontend dependencies and scripts
-│   └── .env                # Environment variables for the frontend (ignored by Git)
-│
-├── backend/                # Node.js backend
-│   ├── node_modules/       # Backend dependencies (ignored by Git)
-│   ├── controllers/        # Controllers for handling API logic
-│   │   └── bikeController.js   # Example controller for bike data
-│   ├── routes/             # API route definitions
-│   │   └── bikeRoutes.js   # Example routes for bike endpoints
-│   ├── app.js              # Main entry point for the backend server
-│   ├── package.json        # Lists backend dependencies and scripts
-│   └── .env                # Environment variables for the backend (ignored by Git)
-│
-├── raspberry-pi/           # Raspberry Pi specific code
-│   ├── scripts/            # Scripts to run on the Raspberry Pi
-│   │   └── pi_listener.js  # Script to listen for bike guard events
-│   ├── config/             # Configuration files for the Raspberry Pi
-│   │   └── config.json     # Configuration file example
-│   └── README.md           # Documentation specific to the Raspberry Pi setup
-│
-└── .gitignore              # Files and directories to ignore in Git
+3. Start the Flask backend:
+```bash
+cd backend
+python app.py
+```
+
+### Frontend Setup
+1. Install Node.js dependencies:
+```bash
+cd frontend
+npm install
+```
+
+2. Start the React development server:
+```bash
+npm start
+```
+
+### Hardware Setup (Raspberry Pi)
+1. Activate the virtual environment and install dependencies (same as backend setup)
+2. Run the accelerometer script:
+```bash
+cd hardware
+python accelerometer.py
+```
+
+## Project Structure
+```
+bike-guard/
+├── frontend/         # React frontend
+├── backend/         # Flask server
+│   └── app.py      # Main server file
+├── hardware/        # Raspberry Pi code
+│   └── accelerometer.py
+├── requirements.txt # Python dependencies
+└── README.md
+```
+
+## Configuration
+- The Flask backend runs on port 5000
+- The React frontend runs on port 3000
+- Make sure to update the API URLs in both frontend and hardware code if needed
+
+## Notes
+- You need Python 3.8+ installed
+- For Raspberry Pi setup, you need the required hardware components connected
+- Make sure I2C is enabled on your Raspberry Pi for the accelerometer

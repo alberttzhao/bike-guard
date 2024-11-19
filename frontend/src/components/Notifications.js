@@ -5,10 +5,9 @@ function Notifications() {
   const [notifications, setNotifications] = useState([]);
 
   useEffect(() => {
-    // Function to fetch notifications from your backend
     const fetchNotifications = async () => {
       try {
-        const response = await fetch('http://your-backend-url/notifications');
+        const response = await fetch('http://localhost:5000/api/notifications');
         const data = await response.json();
         setNotifications(data);
       } catch (error) {
@@ -19,12 +18,16 @@ function Notifications() {
     // Fetch immediately
     fetchNotifications();
 
-    // Set up polling every 5 seconds
+    // Poll every 5 seconds
     const interval = setInterval(fetchNotifications, 5000);
 
-    // Cleanup interval on component unmount
     return () => clearInterval(interval);
   }, []);
+
+  const formatTimestamp = (timestamp) => {
+    const date = new Date(timestamp);
+    return date.toLocaleString();
+  };
 
   return (
     <div className="notifications-container">
@@ -38,12 +41,15 @@ function Notifications() {
           notifications.map((notification) => (
             <div key={notification.id} className="notification-item">
               <div className="notification-icon">
-                {/* You can add different icons based on notification type */}
-                <span className="material-icons">notifications</span>
+                <span className="material-icons">
+                  {notification.type === 'movement' ? 'warning' : 'notifications'}
+                </span>
               </div>
               <div className="notification-content">
                 <p className="notification-message">{notification.message}</p>
-                <span className="notification-time">{notification.timestamp}</span>
+                <span className="notification-time">
+                  {formatTimestamp(notification.timestamp)}
+                </span>
               </div>
             </div>
           ))
