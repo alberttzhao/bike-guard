@@ -4,6 +4,7 @@ from picamera2 import Picamera2
 import io
 import cv2
 import numpy as np
+import atexit
 
 # Initialize Flask app
 app = Flask(__name__)
@@ -25,6 +26,7 @@ def generate_frames():
         # Yield the frame as a byte stream
         yield (b'--frame\r\n'
                b'Content-Type: image/jpeg\r\n\r\n' + jpeg.tobytes() + b'\r\n\r\n')
+        atexit.register(picam2.stop)
 
 @app.route('/')
 def index():
