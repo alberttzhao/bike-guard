@@ -1,38 +1,111 @@
-.App {
-  text-align: center;
+/* Base styles */
+:root {
+  --primary-color: #1976d2;
+  --danger-color: #dc3545;
+  --background-color: #f5f7f9;
+  --card-background: #ffffff;
+  --text-primary: #2c3e50;
+  --text-secondary: #7f8c8d;
+  --border-radius: 10px;
 }
 
-.App-logo {
-  height: 40vmin;
-  pointer-events: none;
+body {
+  background-color: var(--background-color);
+  color: var(--text-primary);
 }
 
-@media (prefers-reduced-motion: no-preference) {
-  .App-logo {
-    animation: App-logo-spin infinite 20s linear;
-  }
+.app-container {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 20px;
 }
 
-.App-header {
-  background-color: #282c34;
-  min-height: 100vh;
+/* Header */
+.app-header {
   display: flex;
-  flex-direction: column;
+  justify-content: space-between;
   align-items: center;
+  margin-bottom: 24px;
+}
+
+.app-header h1 {
+  font-size: 24px;
+  font-weight: 600;
+  color: var(--primary-color);
+}
+
+.header-controls button {
+  background: none;
+  border: none;
+  padding: 8px;
+  cursor: pointer;
+  color: var(--text-primary);
+}
+
+/* Dashboard Content */
+.dashboard-content {
+  display: grid;
+  gap: 24px;
+}
+
+/* Camera Feed */
+.video-container {
+  background: var(--card-background);
+  border-radius: var(--border-radius);
+  overflow: hidden;
+  box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+}
+
+.video-player {
+  width: 100%;
+  aspect-ratio: 16/9;
+  object-fit: cover;
+}
+
+.camera-controls {
+  display: flex;
+  gap: 12px;
+  padding: 12px;
+}
+
+/* Alarm Button */
+.controls-section {
+  display: flex;
   justify-content: center;
-  font-size: calc(10px + 2vmin);
+  padding: 20px 0;
+}
+
+.alarm-button {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  background-color: var(--danger-color);
   color: white;
+  border: none;
+  padding: 16px 32px;
+  border-radius: 24px;
+  font-size: 18px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background-color 0.2s;
 }
 
-.App-link {
-  color: #61dafb;
+.alarm-button:hover {
+  background-color: #c82333;
 }
 
-@keyframes App-logo-spin {
-  from {
-    transform: rotate(0deg);
+/* Responsive Design */
+@media (max-width: 768px) {
+  .app-container {
+    padding: 12px;
   }
-  to {
-    transform: rotate(360deg);
+  
+  .dashboard-content {
+    gap: 16px;
+  }
+  
+  .alarm-button {
+    width: 100%;
+    justify-content: center;
   }
 }
