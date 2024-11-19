@@ -8,7 +8,7 @@ from gpiozero import Buzzer
 from time import sleep
 
 # Replace with your laptop's IP address where Flask is running
-BACKEND_URL = "http://YOUR_LAPTOP_IP:5000"
+BACKEND_URL = "http://128.197.180.212:5001"
 
 # Define the MPU-6050 I2C address and registers
 MPU6050_ADDRESS = 0x68
