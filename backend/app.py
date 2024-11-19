@@ -2,10 +2,15 @@ from flask import Flask, request, jsonify
 from flask_cors import CORS
 from datetime import datetime
 import sqlite3
-import os
+import socket
 
 app = Flask(__name__)
-CORS(app)  # This allows your React frontend to connect
+CORS(app)
+
+def get_ip():
+    hostname = socket.gethostname()
+    ip_address = socket.gethostbyname(hostname)
+    return ip_address
 
 # Database initialization
 def init_db():
@@ -22,10 +27,10 @@ def init_db():
     conn.commit()
     conn.close()
 
-# Create a notification
 @app.route('/api/notifications', methods=['POST'])
 def create_notification():
     data = request.json
+    print(f"Received notification: {data}")  # Debug print
     conn = sqlite3.connect('database.db')
     c = conn.cursor()
     
@@ -37,22 +42,18 @@ def create_notification():
         conn.commit()
         notification_id = c.lastrowid
         
-        # Fetch the created notification
-        c.execute('SELECT * FROM notifications WHERE id = ?', (notification_id,))
-        notification = c.fetchone()
-        
         return jsonify({
-            'id': notification[0],
-            'message': notification[1],
-            'type': notification[2],
-            'timestamp': notification[3]
+            'id': notification_id,
+            'message': data['message'],
+            'type': data.get('type', 'movement'),
+            'timestamp': datetime.now().isoformat()
         }), 201
     except Exception as e:
+        print(f"Error creating notification: {e}")  # Debug print
         return jsonify({'error': str(e)}), 500
     finally:
         conn.close()
 
-# Get all notifications
 @app.route('/api/notifications', methods=['GET'])
 def get_notifications():
     conn = sqlite3.connect('database.db')
@@ -74,5 +75,7 @@ def get_notifications():
         conn.close()
 
 if __name__ == '__main__':
-    init_db()  # Initialize database on startup
+    init_db()
+    ip = get_ip()
+    print(f"Server running on http://{ip}:5001")
     app.run(host='0.0.0.0', port=5001, debug=True)
