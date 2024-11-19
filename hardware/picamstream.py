@@ -14,6 +14,7 @@ picam2 = Picamera2()
 # Function to capture frames and convert to JPEG
 def generate_frames():
     picam2.start()
+    sleep(2)
     while True:
         # Capture a frame from the camera
         frame = picam2.capture_array()
