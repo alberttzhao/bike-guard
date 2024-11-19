@@ -1,18 +1,16 @@
 import React, { useRef, useEffect } from 'react';
 import './Components.css';
 
-function CameraFeed() {
-  const videoRef = useRef(null);
+const CameraFeed = () => {
+  const imgRef = useRef(null);
 
   useEffect(() => {
-    // Function to start the video stream
-    const startStream = async () => {
+    // Function to start the stream
+    const startStream = () => {
       try {
-        // Replace this URL with your Raspberry Pi's video stream URL
-        const videoUrl = 'http://your-raspberry-pi-url/video-stream';
-        
-        if (videoRef.current) {
-          videoRef.current.src = videoUrl;
+        if (imgRef.current) {
+          // Set the src directly to the stream URL
+          imgRef.current.src = 'http://128.197.180.227:8000/video_stream';
         }
       } catch (error) {
         console.error('Error starting video stream:', error);
@@ -20,6 +18,13 @@ function CameraFeed() {
     };
 
     startStream();
+
+    // Cleanup function
+    return () => {
+      if (imgRef.current) {
+        imgRef.current.src = '';
+      }
+    };
   }, []);
 
   return (
@@ -28,20 +33,15 @@ function CameraFeed() {
         <h2 className="section-title">Live View</h2>
         <div className="camera-controls">
           <button className="camera-control-btn">
-            <span className="material-icons">volume_up</span>
-          </button>
-          <button className="camera-control-btn">
             <span className="material-icons">fullscreen</span>
           </button>
         </div>
       </div>
       <div className="video-container">
-        <video
-          ref={videoRef}
-          autoPlay
-          playsInline
-          muted
+        <img
+          ref={imgRef}
           className="video-player"
+          alt="Camera Feed"
         />
       </div>
     </div>
