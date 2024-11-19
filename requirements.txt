@@ -1,0 +1,5 @@
+flask==3.0.0
+flask-cors==4.0.0
+requests==2.31.0
+gpiozero==2.0
+smbus2==0.4.3
