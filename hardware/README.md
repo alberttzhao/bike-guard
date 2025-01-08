@@ -1,8 +1,5 @@
 # I2C Adafruit ADXL343 Example
 
-We took the ESP32 I2C example and reworked it to control the Adafruit ADXL343 accelerometer.
+This is the folder for hardware stuff.. more to come soom
 
-2023-10-03
-Changed
-NACK_VAL  0x01
 
