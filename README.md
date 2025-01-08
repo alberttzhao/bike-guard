@@ -1,5 +1,8 @@
 # BikeGuard
 
+<p align="center">
+<img src="./photos/LogoRendition3.png" width="50%">
+</p>
 A bike security system using Raspberry Pi for movement detection and notifications.
 
 ## Setup Instructions
