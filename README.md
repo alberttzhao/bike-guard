@@ -41,10 +41,10 @@ npm start
 
 ### Hardware Setup (Raspberry Pi)
 1. Activate the virtual environment and install dependencies (same as backend setup)
-2. Run the accelerometer script:
+2. Run the node script:
 ```bash
 cd hardware
-python accelerometer.py
+node log_mpu_data.js
 ```
 
 ## Project Structure
@@ -54,7 +54,9 @@ bike-guard/
 ├── backend/         # Flask server
 │   └── app.py      # Main server file
 ├── hardware/        # Raspberry Pi code
+│   └── log_mpu_data_.js
 │   └── accelerometer.py
+│   └── picam3.py
 ├── requirements.txt # Python dependencies
 └── README.md
 ```
@@ -66,5 +68,4 @@ bike-guard/
 
 ## Notes
 - You need Python 3.8+ installed
-- For Raspberry Pi setup, you need the required hardware components connected
-- Make sure I2C is enabled on your Raspberry Pi for the accelerometer
+- Raspberry Pi Camera module code written for Debian Bullseye Raspberry Pi OS
