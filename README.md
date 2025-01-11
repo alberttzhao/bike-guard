@@ -72,3 +72,4 @@ bike-guard/
 ## Notes
 - You need Python 3.8+ installed
 - Raspberry Pi Camera module code written for Debian Bullseye Raspberry Pi OS
+# EC418FinalProj
