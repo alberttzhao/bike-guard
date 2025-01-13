@@ -38,6 +38,8 @@ Our hardware setup includes a Raspberry Pi Zero 2 W, a corresponding Raspberry P
 ## Code Flow Explained
 As can be seen, running the log_mpu_data.js node.js script will create a python child process called accelerometer.py. Accelerometer.py is responsible for communicating with the acceleromter and collecting accelerometer values. It then prints these values, which are grabbed by the node.js code and written to a csv file. In the future, we might move this all to one python script given that python also has capabilities to write to a csv file. 
 
+The Pi Camera is controlled via the picam3.py code. This code generates the stream and sends data to a Flask server. 
+
 <p align="center">
 <img src="./photos/onboard_software.png" width="80%">
 </p>
