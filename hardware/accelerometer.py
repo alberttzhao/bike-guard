@@ -33,6 +33,29 @@ ACCEL_ZOUT_H = 0x3F
 GYRO_XOUT_H = 0x43
 GYRO_YOUT_H = 0x45
 GYRO_ZOUT_H = 0x47
+
+# Pi camera stream
+def generate_camera_stream():
+    with picamera.PiCamera() as camera:
+        # Camera warm-up time
+        sleep(2)
+        
+        stream = io.BytesIO()
+        for _ in camera.capture_continuous(stream, 'jpeg', use_video_port=True):
+            stream.seek(0)
+            frame = stream.read()
+            
+            # Use yield to return the current frame as part of the response
+            yield (b'--frame\r\n'b'Content-Type: image/jpeg\r\n\r\n' + frame + b'\r\n')
+                   
+            # Reset stream for the next frame
+            stream.seek(0)
+            stream.truncate()
+@app.route('/video_stream')
+def video_stream():
+    return Response(generate_camera_stream(),
+                    mimetype='multipart/x-mixed-replace; boundary=frame')
+
 # Initialize the I2C bus
 bus = smbus.SMBus(1)
 # Initialize MPU-6050
@@ -134,6 +157,7 @@ init_mpu()
 # Collect data
 try:
     while True:
+        app.run(host='128.197.180.227', port=8000, threaded=True) # added by ssa
         data = read_mpu_data()
         pitch, roll = calculate_pitch_roll(data["accel"])
         
@@ -165,29 +189,6 @@ try:
 except KeyboardInterrupt:
     print("Measurement stopped by User")
    
- #-------------- Picam 
-def generate_camera_stream():
-    with picamera.PiCamera() as camera:
-        # Camera warm-up time
-        sleep(2)
-        
-        stream = io.BytesIO()
-        for _ in camera.capture_continuous(stream, 'jpeg', use_video_port=True):
-            stream.seek(0)
-            frame = stream.read()
-            
-            # Use yield to return the current frame as part of the response
-            yield (b'--frame\r\n'b'Content-Type: image/jpeg\r\n\r\n' + frame + b'\r\n')
-                   
-            # Reset stream for the next frame
-            stream.seek(0)
-            stream.truncate()
-
-@app.route('/video_stream')
-def video_stream():
-    return Response(generate_camera_stream(),
-                    mimetype='multipart/x-mixed-replace; boundary=frame')
-app.run(host='128.197.180.227', port=8000, threaded=True)
 
 #if __name__ == '__main__':
    # app.run(host='128.197.180.227', port=8000, threaded=True)
