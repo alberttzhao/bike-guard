@@ -113,6 +113,7 @@ def calculate_pitch_roll(accel):
     return pitch, roll
 
 
+
 # ------------------ CSV file setup
 csv_file_path = "mpu_data_log.csv"
 csv_headers = ["Accel_X", "Accel_Y", "Accel_Z", "Gyro_X", "Gyro_Y", "Gyro_Z", "Pitch", "Roll"]
@@ -186,8 +187,9 @@ def generate_camera_stream():
 def video_stream():
     return Response(generate_camera_stream(),
                     mimetype='multipart/x-mixed-replace; boundary=frame')
+app.run(host='128.197.180.227', port=8000, threaded=True)
 
-if __name__ == '__main__':
-    app.run(host='128.197.180.227', port=8000, threaded=True)
+#if __name__ == '__main__':
+   # app.run(host='128.197.180.227', port=8000, threaded=True)
 
  #-------------- Picam ends 
