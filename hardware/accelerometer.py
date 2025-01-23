@@ -7,6 +7,11 @@ import gpiozero
 from gpiozero import Buzzer
 from time import sleep
 
+#adding some stuff for csv file 
+import subprocess
+import os
+import csv
+
 # Replace with your laptop's IP address where Flask is running
 BACKEND_URL = "http://128.197.180.212:5001"
 
@@ -98,6 +103,21 @@ def calculate_pitch_roll(accel):
     
     return pitch, roll
 
+
+# ------------------ CSV file setup
+csv_file_path = "mpu_data_log.csv"
+csv_headers = ["Accel_X", "Accel_Y", "Accel_Z", "Gyro_X", "Gyro_Y", "Gyro_Z", "Pitch", "Roll"]
+
+# Initialize the CSV file with headers if it doesn't exist
+if not os.path.exists(csv_file_path):
+    with open(csv_file_path, mode="w", newline="") as file:
+        writer = csv.writer(file)
+        writer.writerow(csv_headers)
+
+
+# ------------------ CSV file setup ends
+
+
 # Initialize MPU
 init_mpu()
 
@@ -107,8 +127,25 @@ try:
         data = read_mpu_data()
         pitch, roll = calculate_pitch_roll(data["accel"])
         
+        
+        #-------------- CSV file writing
+        # Prepare row for CSV
+        csv_row = [
+            f"{data['accel']['x']:.2f}", f"{data['accel']['y']:.2f}", f"{data['accel']['z']:.2f}",
+            f"{data['gyro']['x']:.2f}", f"{data['gyro']['y']:.2f}", f"{data['gyro']['z']:.2f}",
+            f"{pitch:.2f}", f"{roll:.2f}"
+        ]
+        
+        # Write row to CSV
+        with open(csv_file_path, mode="a", newline="") as file:
+            writer = csv.writer(file)
+            writer.writerow(csv_row)
+            
+        
+        #----------- CSV file writing ends
+            
         #data adapted to work well for csv 
-        print(f"{data['accel']['x']:.2f}, {data['accel']['y']:.2f}, {data['accel']['z']:.2f}, {data['gyro']['x']:.2f}, {data['gyro']['y']:.2f}, {data['gyro']['z']:.2f}, {pitch:.2f}, {roll:.2f}")
+       #print(f"{data['accel']['x']:.2f}, {data['accel']['y']:.2f}, {data['accel']['z']:.2f}, {data['gyro']['x']:.2f}, {data['gyro']['y']:.2f}, {data['gyro']['z']:.2f}, {pitch:.2f}, {roll:.2f}")
         sys.stdout.flush()  # Add this line to flush the output buffer
 
         time.sleep(1)
