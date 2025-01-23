@@ -12,6 +12,15 @@ import subprocess
 import os
 import csv
 
+#Adding some stuff for picam 
+from flask import Flask, Response
+import picamera
+import io
+from time import sleep
+
+# Initialize the Flask app
+app = Flask(__name__)
+
 # Replace with your laptop's IP address where Flask is running
 BACKEND_URL = "http://128.197.180.212:5001"
 
@@ -143,11 +152,42 @@ try:
             
         
         #----------- CSV file writing ends
+        
+
             
         #data adapted to work well for csv 
        #print(f"{data['accel']['x']:.2f}, {data['accel']['y']:.2f}, {data['accel']['z']:.2f}, {data['gyro']['x']:.2f}, {data['gyro']['y']:.2f}, {data['gyro']['z']:.2f}, {pitch:.2f}, {roll:.2f}")
         sys.stdout.flush()  # Add this line to flush the output buffer
 
         time.sleep(1)
+ 
 except KeyboardInterrupt:
     print("Measurement stopped by User")
+   
+ #-------------- Picam 
+def generate_camera_stream():
+    with picamera.PiCamera() as camera:
+        # Camera warm-up time
+        sleep(2)
+        
+        stream = io.BytesIO()
+        for _ in camera.capture_continuous(stream, 'jpeg', use_video_port=True):
+            stream.seek(0)
+            frame = stream.read()
+            
+            # Use yield to return the current frame as part of the response
+            yield (b'--frame\r\n'b'Content-Type: image/jpeg\r\n\r\n' + frame + b'\r\n')
+                   
+            # Reset stream for the next frame
+            stream.seek(0)
+            stream.truncate()
+
+@app.route('/video_stream')
+def video_stream():
+    return Response(generate_camera_stream(),
+                    mimetype='multipart/x-mixed-replace; boundary=frame')
+
+if __name__ == '__main__':
+    app.run(host='128.197.180.227', port=8000, threaded=True)
+
+ #-------------- Picam ends 
