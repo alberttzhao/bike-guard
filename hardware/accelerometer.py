@@ -79,14 +79,17 @@ def read_raw_data(register):
 
 # First thread
 def read_mpu_data():
+
     # Read accelerometer data
     accel_x = read_raw_data(ACCEL_XOUT_H)
     accel_y = read_raw_data(ACCEL_YOUT_H)
     accel_z = read_raw_data(ACCEL_ZOUT_H)
+
     # Read gyroscope data
     gyro_x = read_raw_data(GYRO_XOUT_H)
     gyro_y = read_raw_data(GYRO_YOUT_H)
     gyro_z = read_raw_data(GYRO_ZOUT_H)
+
     # Convert to g and degrees per second
     accel_x /= 16384.0
     accel_y /= 16384.0
@@ -94,16 +97,30 @@ def read_mpu_data():
     gyro_x /= 131.0
     gyro_y /= 131.0
     gyro_z /= 131.0
-    #return {
-    #    "accel": {"x": accel_x, "y": accel_y, "z": accel_z},
-    #    "gyro": {"x": gyro_x, "y": gyro_y, "z": gyro_z}
-    #}
+
+    data= {
+        "accel": {"x": accel_x, "y": accel_y, "z": accel_z},
+        "gyro": {"x": gyro_x, "y": gyro_y, "z": gyro_z}
+    }
     
     pitch = math.atan2(accel_y, math.sqrt(accel_x * accel_x + accel_z * accel_z)) * (180 / math.pi)
     roll = math.atan2(-accel_x, accel_z) * (180 / math.pi)
-    
+
+    #-------------- CSV file writing
+    # Prepare row for CSV
+    csv_row = [
+        f"{data['accel']['x']:.2f}", f"{data['accel']['y']:.2f}", f"{data['accel']['z']:.2f}",
+        f"{data['gyro']['x']:.2f}", f"{data['gyro']['y']:.2f}", f"{data['gyro']['z']:.2f}",
+        f"{pitch:.2f}", f"{roll:.2f}"
+    ]
+        
+    # Write row to CSV
+    with open(csv_file_path, mode="a", newline="") as file:
+        writer = csv.writer(file)
+        writer.writerow(csv_row)
+            
     buzzer = Buzzer(17)
-    
+
     try:
         if pitch > 5 or roll > 10:
             print("Movement detected!")
@@ -116,7 +133,9 @@ def read_mpu_data():
         print("\nExiting program.")
         buzzer.off()
     
-    return pitch, roll
+    sys.stdout.flush()  # Add this line to flush the output buffer
+
+    time.sleep(1)
 
 def send_notification(message):
     try:
@@ -251,23 +270,7 @@ if __name__ =="__main__":
             t1.join()
             t2.join()
         
-            #-------------- CSV file writing
-            # Prepare row for CSV
-            csv_row = [
-                f"{data['accel']['x']:.2f}", f"{data['accel']['y']:.2f}", f"{data['accel']['z']:.2f}",
-                f"{data['gyro']['x']:.2f}", f"{data['gyro']['y']:.2f}", f"{data['gyro']['z']:.2f}",
-                f"{pitch:.2f}", f"{roll:.2f}"
-            ]
-        
-            # Write row to CSV
-            with open(csv_file_path, mode="a", newline="") as file:
-                writer = csv.writer(file)
-                writer.writerow(csv_row)
-            
-            sys.stdout.flush()  # Add this line to flush the output buffer
 
-            time.sleep(1)
-            
     except KeyboardInterrupt:
         print("Measurement stopped by User")
    
