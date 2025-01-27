@@ -102,10 +102,24 @@ def read_mpu_data():
         "accel": {"x": accel_x, "y": accel_y, "z": accel_z},
         "gyro": {"x": gyro_x, "y": gyro_y, "z": gyro_z}
     }
+    print(data)
     
     pitch = math.atan2(accel_y, math.sqrt(accel_x * accel_x + accel_z * accel_z)) * (180 / math.pi)
     roll = math.atan2(-accel_x, accel_z) * (180 / math.pi)
-    
+
+    #-------------- CSV file writing
+    # Prepare row for CSV
+    csv_row = [
+        f"{data['accel']['x']:.2f}", f"{data['accel']['y']:.2f}", f"{data['accel']['z']:.2f}",
+        f"{data['gyro']['x']:.2f}", f"{data['gyro']['y']:.2f}", f"{data['gyro']['z']:.2f}",
+        f"{pitch:.2f}", f"{roll:.2f}"
+    ]
+        
+    # Write row to CSV
+    with open(csv_file_path, mode="a", newline="") as file:
+        writer = csv.writer(file)
+        writer.writerow(csv_row)
+            
     buzzer = Buzzer(17)
     # buzzer.on() 
     # sleep(1)
@@ -126,21 +140,6 @@ def read_mpu_data():
     sys.stdout.flush()  # Add this line to flush the output buffer
 
     time.sleep(1)
-
-    #-------------- CSV file writing
-    # Prepare row for CSV
-    csv_row = [
-        f"{data['accel']['x']:.2f}", f"{data['accel']['y']:.2f}", f"{data['accel']['z']:.2f}",
-        f"{data['gyro']['x']:.2f}", f"{data['gyro']['y']:.2f}", f"{data['gyro']['z']:.2f}",
-        f"{pitch:.2f}", f"{roll:.2f}"
-    ]
-        
-    # Write row to CSV
-    with open(csv_file_path, mode="a", newline="") as file:
-        writer = csv.writer(file)
-        writer.writerow(csv_row)
-            
-
 
 def send_notification(message):
     try:
