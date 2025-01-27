@@ -60,9 +60,6 @@ def video_stream():
     return Response(generate_camera_stream(),
                     mimetype='multipart/x-mixed-replace; boundary=frame')
 
-# Initialize the I2C bus
-#bus = smbus.SMBus(1)
-
 # Initialize MPU-6050
 def init_mpu():
     bus.write_byte_data(MPU6050_ADDRESS, PWR_MGMT_1, 0)
@@ -77,7 +74,7 @@ def read_raw_data(register):
     return value
 # Main function to read accelerometer and gyroscope data
 
-# First thread
+# Read MPU-5060
 def read_mpu_data():
 
     # Read accelerometer data
@@ -98,48 +95,11 @@ def read_mpu_data():
     gyro_y /= 131.0
     gyro_z /= 131.0
 
-    data= {
+    return {
         "accel": {"x": accel_x, "y": accel_y, "z": accel_z},
         "gyro": {"x": gyro_x, "y": gyro_y, "z": gyro_z}
     }
-    print(data)
-    
-    pitch = math.atan2(accel_y, math.sqrt(accel_x * accel_x + accel_z * accel_z)) * (180 / math.pi)
-    roll = math.atan2(-accel_x, accel_z) * (180 / math.pi)
 
-    #-------------- CSV file writing
-    # Prepare row for CSV
-    csv_row = [
-        f"{data['accel']['x']:.2f}", f"{data['accel']['y']:.2f}", f"{data['accel']['z']:.2f}",
-        f"{data['gyro']['x']:.2f}", f"{data['gyro']['y']:.2f}", f"{data['gyro']['z']:.2f}",
-        f"{pitch:.2f}", f"{roll:.2f}"
-    ]
-        
-    # Write row to CSV
-    with open(csv_file_path, mode="a", newline="") as file:
-        writer = csv.writer(file)
-        writer.writerow(csv_row)
-            
-    buzzer = Buzzer(17)
-    # buzzer.on() 
-    # sleep(1)
-    # buzzer.off()
-
-    try:
-        if pitch > 5 or roll > 10:
-            print("Movement detected!")
-            buzzer.on()  # Turn on the buzzer
-            # Send notification when movement is detected
-            send_notification("Your bike is moving too much!")
-            sleep(1)
-            buzzer.off()
-    except KeyboardInterrupt:
-        print("\nExiting program.")
-        buzzer.off()
-    
-    sys.stdout.flush()  # Add this line to flush the output buffer
-
-    time.sleep(1)
 
 def send_notification(message):
     try:
@@ -161,84 +121,59 @@ def send_notification(message):
     except Exception as e:
         print(f"Error sending notification to {BACKEND_URL}: {e}")
 
-# Function called by first thread
-#def calculate_pitch_roll(accel):
-#    ax = accel["x"]
-#    ay = accel["y"]
-#    az = accel["z"]
+# Calculate Pitch and Roll
+def calculate_pitch_roll(accel):
+    ax = accel["x"]
+    ay = accel["y"]
+    az = accel["z"]
     
-#    pitch = math.atan2(ay, math.sqrt(ax * ax + az * az)) * (180 / math.pi)
-#    roll = math.atan2(-ax, az) * (180 / math.pi)
+    pitch = math.atan2(ay, math.sqrt(ax * ax + az * az)) * (180 / math.pi)
+    roll = math.atan2(-ax, az) * (180 / math.pi)
     
-#    buzzer = Buzzer(17)
+    buzzer = Buzzer(17)
     
-#    try:
-#        if pitch > 5 or roll > 10:
-#            print("Movement detected!")
-#            buzzer.on()  # Turn on the buzzer
-#            # Send notification when movement is detected
-#            send_notification("Your bike is moving too much!")
-#            sleep(1)
-#            buzzer.off()
-#    except KeyboardInterrupt:
-#        print("\nExiting program.")
-#        buzzer.off()
-#    
-#    return pitch, roll
+    try:
+        if pitch > 5 or roll > 10:
+            print("Movement detected!")
+            buzzer.on()  # Turn on the buzzer
+            # Send notification when movement is detected
+            send_notification("Your bike is moving too much!")
+            sleep(1)
+            buzzer.off()
+    except KeyboardInterrupt:
+        print("\nExiting program.")
+        buzzer.off()
+    
+    return pitch, roll
 
-
-
-# ------------------ CSV file setup
-#csv_file_path = "mpu_data_log.csv"
-#csv_headers = ["Accel_X", "Accel_Y", "Accel_Z", "Gyro_X", "Gyro_Y", "Gyro_Z", "Pitch", "Roll"]
-
-# Initialize the CSV file with headers if it doesn't exist
-#if not os.path.exists(csv_file_path):
-#    with open(csv_file_path, mode="w", newline="") as file:
-#        writer = csv.writer(file)
-#        writer.writerow(csv_headers)
-
-
-# ------------------ CSV file setup ends
-
-
-# Initialize MPU
-#init_mpu()
-
-# Collect data
-#try:
-#    while True:
-        #data = read_mpu_data()
-        #pitch, roll = calculate_pitch_roll(data["accel"])
-#        pitch, roll = read_mpu_data()
+def accel_thread():
+    try:
+        while True:
+            data = read_mpu_data()
+            pitch, roll = calculate_pitch_roll(data["accel"])
+            pitch, roll = read_mpu_data()
         
         
-        #-------------- CSV file writing
-        # Prepare row for CSV
-#        csv_row = [
-#            f"{data['accel']['x']:.2f}", f"{data['accel']['y']:.2f}", f"{data['accel']['z']:.2f}",
-#            f"{data['gyro']['x']:.2f}", f"{data['gyro']['y']:.2f}", f"{data['gyro']['z']:.2f}",
-#            f"{pitch:.2f}", f"{roll:.2f}"
-#        ]
+            #-------------- CSV file writing
+            # Prepare row for CSV
+            csv_row = [
+                f"{data['accel']['x']:.2f}", f"{data['accel']['y']:.2f}", f"{data['accel']['z']:.2f}",
+                f"{data['gyro']['x']:.2f}", f"{data['gyro']['y']:.2f}", f"{data['gyro']['z']:.2f}",
+                f"{pitch:.2f}", f"{roll:.2f}"
+            ]
         
-        # Write row to CSV
- #       with open(csv_file_path, mode="a", newline="") as file:
- #           writer = csv.writer(file)
- #           writer.writerow(csv_row)
- #           
-        
-        #----------- CSV file writing ends
-        
-
+            # Write row to CSV
+            with open(csv_file_path, mode="a", newline="") as file:
+                writer = csv.writer(file)
+                writer.writerow(csv_row)
             
-        #data adapted to work well for csv 
-       #print(f"{data['accel']['x']:.2f}, {data['accel']['y']:.2f}, {data['accel']['z']:.2f}, {data['gyro']['x']:.2f}, {data['gyro']['y']:.2f}, {data['gyro']['z']:.2f}, {pitch:.2f}, {roll:.2f}")
- #       sys.stdout.flush()  # Add this line to flush the output buffer
-
- #       time.sleep(1)
+        
+            #----------- CSV file writing ends
+            sys.stdout.flush()  # Add this line to flush the output buffer
+            time.sleep(1)
  
-#except KeyboardInterrupt:
-  #  print("Measurement stopped by User")
+    except KeyboardInterrupt:
+        print("Measurement stopped by User")
 
 def camera_thread():
     app.run(host='128.197.180.227', port=8000, threaded=True)
@@ -266,15 +201,9 @@ if __name__ =="__main__":
     t1 = threading.Thread(target=read_mpu_data)
     t2 = threading.Thread(target=camera_thread)
 
-    try:
-        while True:
-            t1.start()
-            t2.start()
+    t1.start()
+    t2.start()
 
-            t1.join()
-            t2.join()
-        
-
-    except KeyboardInterrupt:
-        print("Measurement stopped by User")
+    t1.join()
+    t2.join()
    
