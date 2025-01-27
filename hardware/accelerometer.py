@@ -120,6 +120,9 @@ def read_mpu_data():
         writer.writerow(csv_row)
             
     buzzer = Buzzer(17)
+    buzzer.on() 
+    sleep(1)
+    buzzer.off()
 
     try:
         if pitch > 5 or roll > 10:
