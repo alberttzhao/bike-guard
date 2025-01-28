@@ -115,7 +115,7 @@ def send_notification(message):
 		)
 		if response.status_code == 201:
 			print(f"Notification sent successfully to {BACKEND_URL}")
-        	else:
+        else:
 			print(f"Failed to send notification: {response.status_code}")
 			print(f"Response: {response.text}")
 	except Exception as e:
