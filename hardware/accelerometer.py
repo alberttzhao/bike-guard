@@ -39,171 +39,169 @@ GYRO_ZOUT_H = 0x47
 
 # Pi camera stream
 def generate_camera_stream():
-    with picamera.PiCamera() as camera:
-        # Camera warm-up time
-        sleep(2)
-        
-        stream = io.BytesIO()
-        for _ in camera.capture_continuous(stream, 'jpeg', use_video_port=True):
-            stream.seek(0)
-            frame = stream.read()
-            
-            # Use yield to return the current frame as part of the response
-            yield (b'--frame\r\n'b'Content-Type: image/jpeg\r\n\r\n' + frame + b'\r\n')
-                   
-            # Reset stream for the next frame
-            stream.seek(0)
-            stream.truncate()
+	with picamera.PiCamera() as camera:
+		# Camera warm-up time
+		sleep(2)
+
+		stream = io.BytesIO()
+		for _ in camera.capture_continuous(stream, 'jpeg', use_video_port=True):
+			stream.seek(0)
+			frame = stream.read()
+
+			# Use yield to return the current frame as part of the response
+			yield (b'--frame\r\n'b'Content-Type: image/jpeg\r\n\r\n' + frame + b'\r\n')
+
+			# Reset stream for the next frame
+			stream.seek(0)
+			stream.truncate()
 
 @app.route('/video_stream')
 def video_stream():
-    return Response(generate_camera_stream(),
-                    mimetype='multipart/x-mixed-replace; boundary=frame')
+	return Response(generate_camera_stream(),
+			mimetype='multipart/x-mixed-replace; boundary=frame')
 
 # Initialize MPU-6050
 def init_mpu():
-    bus.write_byte_data(MPU6050_ADDRESS, PWR_MGMT_1, 0)
+	bus.write_byte_data(MPU6050_ADDRESS, PWR_MGMT_1, 0)
 
 # Read raw data from a register (two bytes)
 def read_raw_data(register):
-    high = bus.read_byte_data(MPU6050_ADDRESS, register)
-    low = bus.read_byte_data(MPU6050_ADDRESS, register + 1)
-    value = (high << 8) + low
-    if value > 32768:
-        value = value - 65536
-    return value
+	high = bus.read_byte_data(MPU6050_ADDRESS, register)
+	low = bus.read_byte_data(MPU6050_ADDRESS, register + 1)
+	value = (high << 8) + low
+	if value > 32768:
+		value = value - 65536
+	return value
 # Main function to read accelerometer and gyroscope data
 
 # Read MPU-5060
 def read_mpu_data():
 
-    # Read accelerometer data
-    accel_x = read_raw_data(ACCEL_XOUT_H)
-    accel_y = read_raw_data(ACCEL_YOUT_H)
-    accel_z = read_raw_data(ACCEL_ZOUT_H)
+	# Read accelerometer data
+	accel_x = read_raw_data(ACCEL_XOUT_H)
+	accel_y = read_raw_data(ACCEL_YOUT_H)
+	accel_z = read_raw_data(ACCEL_ZOUT_H)
 
-    # Read gyroscope data
-    gyro_x = read_raw_data(GYRO_XOUT_H)
-    gyro_y = read_raw_data(GYRO_YOUT_H)
-    gyro_z = read_raw_data(GYRO_ZOUT_H)
+	# Read gyroscope data
+	gyro_x = read_raw_data(GYRO_XOUT_H)
+	gyro_y = read_raw_data(GYRO_YOUT_H)
+	gyro_z = read_raw_data(GYRO_ZOUT_H)
 
-    # Convert to g and degrees per second
-    accel_x /= 16384.0
-    accel_y /= 16384.0
-    accel_z /= 16384.0
-    gyro_x /= 131.0
-    gyro_y /= 131.0
-    gyro_z /= 131.0
+	# Convert to g and degrees per second
+	accel_x /= 16384.0
+	accel_y /= 16384.0
+	accel_z /= 16384.0
+	gyro_x /= 131.0
+	gyro_y /= 131.0
+	gyro_z /= 131.0
 
-    return {
-        "accel": {"x": accel_x, "y": accel_y, "z": accel_z},
-        "gyro": {"x": gyro_x, "y": gyro_y, "z": gyro_z}
-    }
+	return {
+		"accel": {"x": accel_x, "y": accel_y, "z": accel_z},
+		"gyro": {"x": gyro_x, "y": gyro_y, "z": gyro_z}
+		}
 
 
 def send_notification(message):
-    try:
-        response = requests.post(
-            f'{BACKEND_URL}/api/notifications',
-            json={
-                'message': message,
-                'type': 'movement'
-            },
-            headers={
-                'Content-Type': 'application/json'
-            }
-        )
-        if response.status_code == 201:
-            print(f"Notification sent successfully to {BACKEND_URL}")
-        else:
-            print(f"Failed to send notification: {response.status_code}")
-            print(f"Response: {response.text}")
-    except Exception as e:
-        print(f"Error sending notification to {BACKEND_URL}: {e}")
+	try:
+		response = requests.post(
+			f'{BACKEND_URL}/api/notifications',
+			json={
+				'message': message,
+				'type': 'movement'
+			},
+			headers={
+				'Content-Type': 'application/json'
+			}
+		)
+		if response.status_code == 201:
+			print(f"Notification sent successfully to {BACKEND_URL}")
+        	else:
+			print(f"Failed to send notification: {response.status_code}")
+			print(f"Response: {response.text}")
+	except Exception as e:
+		print(f"Error sending notification to {BACKEND_URL}: {e}")
 
 # Calculate Pitch and Roll
 def calculate_pitch_roll(accel):
-    ax = accel["x"]
-    ay = accel["y"]
-    az = accel["z"]
-    
-    pitch = math.atan2(ay, math.sqrt(ax * ax + az * az)) * (180 / math.pi)
-    roll = math.atan2(-ax, az) * (180 / math.pi)
-    
-    buzzer = Buzzer(17)
-    
-    try:
-        if pitch > 5 or roll > 10:
-            print("Movement detected!")
-            buzzer.on()  # Turn on the buzzer
-            # Send notification when movement is detected
-            send_notification("Your bike is moving too much!")
-            sleep(1)
-            buzzer.off()
-    except KeyboardInterrupt:
-        print("\nExiting program.")
-        buzzer.off()
-    
-    return pitch, roll
+	ax = accel["x"]
+	ay = accel["y"]
+	az = accel["z"]
+
+	pitch = math.atan2(ay, math.sqrt(ax * ax + az * az)) * (180 / math.pi)
+	roll = math.atan2(-ax, az) * (180 / math.pi)
+
+	buzzer = Buzzer(17)
+
+	try:
+		if pitch > 5 or roll > 10:
+			print("Movement detected!")
+			buzzer.on()  # Turn on the buzzer
+			# Send notification when movement is detected
+			send_notification("Your bike is moving too much!")
+			sleep(1)
+			buzzer.off()
+	except KeyboardInterrupt:
+		print("\nExiting program.")
+		buzzer.off()
+
+	return pitch, roll
 
 def accel_thread():
-    try:
-        while True:
-            data = read_mpu_data()
-            pitch, roll = calculate_pitch_roll(data["accel"])
-            pitch, roll = read_mpu_data()
-        
-        
-            #-------------- CSV file writing
-            # Prepare row for CSV
-            csv_row = [
-                f"{data['accel']['x']:.2f}", f"{data['accel']['y']:.2f}", f"{data['accel']['z']:.2f}",
-                f"{data['gyro']['x']:.2f}", f"{data['gyro']['y']:.2f}", f"{data['gyro']['z']:.2f}",
-                f"{pitch:.2f}", f"{roll:.2f}"
-            ]
-        
-            # Write row to CSV
-            with open(csv_file_path, mode="a", newline="") as file:
-                writer = csv.writer(file)
-                writer.writerow(csv_row)
-            
-        
-            #----------- CSV file writing ends
-            sys.stdout.flush()  # Add this line to flush the output buffer
-            time.sleep(1)
- 
-    except KeyboardInterrupt:
-        print("Measurement stopped by User")
+	try:
+		while True:
+			data = read_mpu_data()
+			pitch, roll = calculate_pitch_roll(data["accel"])
+			#pitch, roll = read_mpu_data
+			print("pitch", pitch)
+			print("roll", roll)
+			#-------------- CSV file writing
+			# Prepare row for CSV
+			csv_row = [
+				f"{data['accel']['x']:.2f}", f"{data['accel']['y']:.2f}", f"{data['accel']['z']:.2f}",
+				f"{data['gyro']['x']:.2f}", f"{data['gyro']['y']:.2f}", f"{data['gyro']['z']:.2f}",
+				f"{pitch:.2f}", f"{roll:.2f}"
+				]
+			# Write row to CSV
+			with open(csv_file_path, mode="a", newline="") as file:
+				writer = csv.writer(file)
+				writer.writerow(csv_row)
+
+			#----------- CSV file writing ends
+			sys.stdout.flush()  # Add this line to flush the output buffer
+			time.sleep(1)
+
+
+	except KeyboardInterrupt:
+ 		print("Measurement stopped by User")
 
 def camera_thread():
-    app.run(host='128.197.180.227', port=8000, threaded=True)
+	app.run(host='128.197.180.227', port=8000, threaded=True)
 
 
 if __name__ =="__main__":
 
-    # Initialize the I2C bus
-    bus = smbus.SMBus(1)
+	# Initialize the I2C bus
+	bus = smbus.SMBus(1)
 
-    # initializae MPU-5060
-    init_mpu()
+	# initializae MPU-5060
+	init_mpu()
 
-    # ------------------ CSV file setup
-    csv_file_path = "mpu_data_log.csv"
-    csv_headers = ["Accel_X", "Accel_Y", "Accel_Z", "Gyro_X", "Gyro_Y", "Gyro_Z", "Pitch", "Roll"]
+	# ------------------ CSV file setup
+	csv_file_path = "mpu_data_log.csv"
+	csv_headers = ["Accel_X", "Accel_Y", "Accel_Z", "Gyro_X", "Gyro_Y", "Gyro_Z", "Pitch", "Roll"]
 
-    # Initialize the CSV file with headers if it doesn't exist
-    if not os.path.exists(csv_file_path):
-        with open(csv_file_path, mode="w", newline="") as file:
-            writer = csv.writer(file)
-            writer.writerow(csv_headers)
+	# Initialize the CSV file with headers if it doesn't exist
+	if not os.path.exists(csv_file_path):
+		with open(csv_file_path, mode="w", newline="") as file:
+			writer = csv.writer(file)
+			writer.writerow(csv_headers)
 
 
-    t1 = threading.Thread(target=read_mpu_data)
-    t2 = threading.Thread(target=camera_thread)
+	t1 = threading.Thread(target=accel_thread)
+	t2 = threading.Thread(target=camera_thread)
 
-    t1.start()
-    t2.start()
+	t1.start()
+	t2.start()
 
-    t1.join()
-    t2.join()
-   
+	t1.join()
+	t2.join()
