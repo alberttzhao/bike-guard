@@ -1,23 +1,28 @@
 /* Base styles */
 :root {
-  --primary-color: #1976d2;
+  --primary-color: #800020; /* Burgundy for BikeGuard */
   --danger-color: #dc3545;
-  --background-color: #f5f7f9;
+  --background-color: #f4f4f7;
   --card-background: #ffffff;
   --text-primary: #2c3e50;
   --text-secondary: #7f8c8d;
-  --border-radius: 10px;
+  --border-radius: 12px;
+  --shadow-light: 0 2px 10px rgba(0, 0, 0, 0.08);
 }
 
 body {
   background-color: var(--background-color);
   color: var(--text-primary);
+  font-family: 'Inter', sans-serif;
+  margin: 0;
+  padding: 0;
 }
 
+/* App Container */
 .app-container {
-  max-width: 1200px;
+  max-width: 1100px;
   margin: 0 auto;
-  padding: 20px;
+  padding: 24px;
 }
 
 /* Header */
@@ -26,12 +31,15 @@ body {
   justify-content: space-between;
   align-items: center;
   margin-bottom: 24px;
+  padding: 12px 0;
+  border-bottom: 2px solid rgba(0, 0, 0, 0.05);
 }
 
 .app-header h1 {
-  font-size: 24px;
-  font-weight: 600;
+  font-size: 26px;
+  font-weight: 700;
   color: var(--primary-color);
+  letter-spacing: 0.5px;
 }
 
 .header-controls button {
@@ -40,6 +48,12 @@ body {
   padding: 8px;
   cursor: pointer;
   color: var(--text-primary);
+  font-size: 16px;
+  transition: color 0.2s ease-in-out;
+}
+
+.header-controls button:hover {
+  color: var(--primary-color);
 }
 
 /* Dashboard Content */
@@ -53,7 +67,8 @@ body {
   background: var(--card-background);
   border-radius: var(--border-radius);
   overflow: hidden;
-  box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+  box-shadow: var(--shadow-light);
+  border: 1px solid rgba(0, 0, 0, 0.08);
 }
 
 .video-player {
@@ -64,8 +79,8 @@ body {
 
 .camera-controls {
   display: flex;
-  gap: 12px;
-  padding: 12px;
+  gap: 14px;
+  padding: 14px;
 }
 
 /* Alarm Button */
@@ -78,26 +93,27 @@ body {
 .alarm-button {
   display: flex;
   align-items: center;
-  gap: 8px;
+  gap: 10px;
   background-color: var(--danger-color);
   color: white;
   border: none;
-  padding: 16px 32px;
+  padding: 16px 36px;
   border-radius: 24px;
   font-size: 18px;
   font-weight: 600;
   cursor: pointer;
-  transition: background-color 0.2s;
+  transition: background-color 0.25s, box-shadow 0.25s;
 }
 
 .alarm-button:hover {
   background-color: #c82333;
+  box-shadow: 0 4px 12px rgba(220, 53, 69, 0.3);
 }
 
 /* Responsive Design */
 @media (max-width: 768px) {
   .app-container {
-    padding: 12px;
+    padding: 16px;
   }
   
   .dashboard-content {
