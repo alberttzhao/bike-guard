@@ -7,7 +7,6 @@
     padding: 20px;
   }
   
-  /* Back Button Positioned Outside the Container */
   .back-button {
     position: absolute;
     top: 10px;
@@ -34,30 +33,29 @@
     transform: scale(0.98);
   }
   
-  /* Settings Page Container */
   .settings-container {
     max-width: 600px;
     width: 100%;
-    background: white;
+    background: linear-gradient(135deg, #ff4e50, #8b0000); 
     border-radius: 12px;
     padding: 20px;
     box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
     margin-top: 50px; /* Creates space below back button */
   }
   
-  /* Settings Title */
   .settings-title {
     font-size: 24px;
     font-weight: bold;
     text-align: center;
     margin-bottom: 20px;
+    color: #ffffff; /* White text */
   }
   
-  /* Settings List */
   .settings-list {
     list-style: none;
     padding: 0;
     margin: 0;
+    color: #ffffff; /* White text */
   }
   
   .settings-list li {
@@ -73,14 +71,13 @@
   }
   
   .settings-list li:hover {
-    background: #f5f5f5;
+    background: #f5f5f56a;
   }
   
-  /* Chevron Icon for Navigation */
   .settings-list li::after {
     content: "➔"; /* Arrow icon */
     font-size: 22px;
-    color: #555;
+    color: #ffffff;
     transition: transform 0.2s;
   }
   

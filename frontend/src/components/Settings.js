@@ -1,23 +1,34 @@
-import React from 'react';
+import React, { useState } from 'react';
 import './Settings.css';
+import Account from './Account';
+import Support from './Support';
 
 const Settings = ({ onBack }) => {
+  const [showAccount, setShowAccount] = useState(false);
+  const [showSupport, setShowSupport] = useState(false);
+
+  if (showAccount) {
+    return <Account onBack={() => setShowAccount(false)} />;
+  }
+
+  if (showSupport) {
+    return <Support onBack={() => setShowSupport(false)} />;
+  }
+
   return (
     <div className="settings-page">
-      {/* Back button positioned outside the settings container */}
       <button className="back-button" onClick={onBack}>
         Back
       </button>
 
-      {/* Settings Container */}
       <div className="settings-container">
         <h2 className="settings-title">Settings</h2>
 
         <ul className="settings-list">
-          <li>Account</li>
+          <li onClick={() => setShowAccount(true)}>Account</li>
           <li>Notifications</li>
           <li>My BikeGuard</li>
-          <li>Support</li>
+          <li onClick={() => setShowSupport(true)}>Support</li>
         </ul>
       </div>
     </div>

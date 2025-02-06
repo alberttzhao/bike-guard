@@ -1,0 +1,129 @@
+/* Full Page Wrapper */
+.support-page {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    position: relative;
+    padding: 20px;
+}
+  
+.back-button {
+    position: absolute;
+    top: 10px;
+    left: 10px;
+    background: #dc3545;
+    color: white;
+    border: none;
+    padding: 12px 18px;
+    font-size: 16px;
+    font-weight: bold;
+    border-radius: 10px;
+    cursor: pointer;
+    transition: background 0.3s, transform 0.2s;
+    box-shadow: 0 4px 8px rgba(220, 53, 69, 0.2);
+}
+  
+.back-button:hover {
+    background: #b92c3d;
+    transform: scale(1.05);
+}
+
+.back-button:active {
+    background: #99232f;
+    transform: scale(0.98);
+}
+  
+.support-container {
+    max-width: 600px;
+    width: 100%;
+    background: linear-gradient(135deg, #ff4e50, #8b0000);
+    border-radius: 12px;
+    padding: 20px;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+    margin-top: 50px;
+    text-align: center;
+}
+  
+.support-title {
+    font-size: 24px;
+    font-weight: bold;
+    color: #ffffff;
+    margin-bottom: 15px;
+}
+  
+.support-text {
+    font-size: 18px;
+    color: #ffffff;
+    margin-bottom: 15px;
+}
+  
+.support-list {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+    color: #ffffff;
+    font-size: 18px;
+}
+  
+.support-list li {
+    padding: 10px;
+    font-size: 18px;
+    font-weight: 500;
+    border-bottom: 1px solid #ddd;
+}
+
+/* FAQ Section */
+.faq-container {
+    max-width: 600px;
+    width: 100%;
+    background: linear-gradient(135deg, #8b0000, #ff4e50);
+    border-radius: 12px;
+    padding: 20px;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+    margin-top: 30px;
+    text-align: center;
+    color: #ffffff;
+}
+
+.faq-title {
+    font-size: 22px;
+    font-weight: bold;
+    margin-bottom: 10px;
+}
+
+.faq-list {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+}
+
+.faq-item {
+    padding: 10px;
+    border-bottom: 1px solid #ddd;
+}
+
+.faq-question {
+    background: none;
+    border: none;
+    color: #ffffff;
+    font-size: 18px;
+    font-weight: bold;
+    cursor: pointer;
+    width: 100%;
+    text-align: left;
+    padding: 10px;
+    transition: color 0.3s;
+}
+
+.faq-question:hover {
+    color: #ffd700;
+}
+
+.faq-answer {
+    font-size: 16px;
+    color: #ffffff;
+    padding: 10px;
+    background: rgba(255, 255, 255, 0.2);
+    border-radius: 8px;
+    margin-top: 5px;
+}
