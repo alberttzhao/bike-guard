@@ -1,84 +1,87 @@
 /* Notifications Styles */
 .notifications-container {
-    background: var(--card-background);
-    border-radius: var(--border-radius);
-    padding: 20px;
-    box-shadow: 0 2px 10px rgba(0,0,0,0.1);
-  }
-  
-  .section-title {
-    font-size: 18px;
-    font-weight: 600;
-    margin-bottom: 16px;
-    color: var(--text-primary);
-  }
-  
-  .notifications-list {
-    display: flex;
-    flex-direction: column;
-    gap: 12px;
-  }
-  
-  .notification-item {
-    display: flex;
-    gap: 12px;
-    padding: 12px;
-    background: var(--background-color);
-    border-radius: 8px;
-    transition: background-color 0.2s;
-  }
-  
-  .notification-item:hover {
-    background: #edf2f7;
-  }
-  
-  .notification-icon {
-    color: var(--primary-color);
-  }
-  
-  .notification-content {
-    flex: 1;
-  }
-  
-  .notification-message {
-    font-size: 14px;
-    margin-bottom: 4px;
-  }
-  
-  .notification-time {
-    font-size: 12px;
-    color: var(--text-secondary);
-  }
-  
-  /* Camera Feed Styles */
-  .camera-feed-container {
-    background: var(--card-background);
-    border-radius: var(--border-radius);
-    overflow: hidden;
-    box-shadow: 0 2px 10px rgba(0,0,0,0.1);
-  }
-  
-  .camera-header {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    padding: 16px;
-  }
-  
-  .camera-controls {
-    display: flex;
-    gap: 8px;
-  }
-  
-  .camera-control-btn {
-    background: none;
-    border: none;
-    padding: 8px;
-    cursor: pointer;
-    color: var(--text-primary);
-    border-radius: 50%;
-  }
-  
-  .camera-control-btn:hover {
-    background: var(--background-color);
-  }
+  background: linear-gradient(135deg, #ff4e50, #8b0000); /* Cool red gradient */
+  border-radius: var(--border-radius);
+  padding: 20px;
+  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
+  color: #fff; /* Ensures text is readable */
+}
+
+.section-title {
+  font-size: 18px;
+  font-weight: 600;
+  margin-bottom: 16px;
+  color: #fff; /* White for contrast */
+}
+
+.notifications-list {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.notification-item {
+  display: flex;
+  gap: 12px;
+  padding: 12px;
+  background: rgba(255, 255, 255, 0.1); /* Semi-transparent white */
+  border-radius: 8px;
+  transition: background-color 0.2s;
+}
+
+.notification-item:hover {
+  background: rgba(255, 255, 255, 0.2);
+}
+
+.notification-icon {
+  color: #ffd700; /* Gold for a nice pop */
+}
+
+.notification-content {
+  flex: 1;
+}
+
+.notification-message {
+  font-size: 14px;
+  margin-bottom: 4px;
+}
+
+.notification-time {
+  font-size: 12px;
+  color: rgba(255, 255, 255, 0.8);
+}
+
+/* Camera Feed Styles */
+.camera-feed-container {
+  background: linear-gradient(135deg, #ff4e50, #8b0000);
+  border-radius: var(--border-radius);
+  overflow: hidden;
+  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
+}
+
+.camera-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 16px;
+  color: #fff;
+}
+
+.camera-controls {
+  display: flex;
+  gap: 8px;
+}
+
+.camera-control-btn {
+  background: none;
+  border: none;
+  padding: 8px;
+  cursor: pointer;
+  color: #fff;
+  border-radius: 50%;
+  transition: background 0.2s;
+}
+
+.camera-control-btn:hover {
+  background: rgba(255, 255, 255, 0.2);
+}

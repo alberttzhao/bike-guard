@@ -1,0 +1,123 @@
+/* Full Page Wrapper */
+.account-page {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    position: relative;
+    padding: 20px;
+}
+  
+.back-button {
+    position: absolute;
+    top: 10px;
+    left: 10px;
+    background: #dc3545; /* Red background */
+    color: white;
+    border: none;
+    padding: 12px 18px;
+    font-size: 16px;
+    font-weight: bold;
+    border-radius: 10px;
+    cursor: pointer;
+    transition: background 0.3s, transform 0.2s;
+    box-shadow: 0 4px 8px rgba(220, 53, 69, 0.2);
+}
+  
+.back-button:hover {
+    background: #b92c3d;
+    transform: scale(1.05);
+}
+
+.back-button:active {
+    background: #99232f;
+    transform: scale(0.98);
+}
+  
+.account-container {
+    max-width: 600px;
+    width: 100%;
+    background: linear-gradient(135deg, #ff4e50, #8b0000); 
+    border-radius: 12px;
+    padding: 20px;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+    margin-top: 50px; /* Creates space below back button */
+}
+  
+.account-title {
+    font-size: 24px;
+    text-align: center;
+    margin-bottom: 20px;
+    color: #ffffff; /* White text */
+}
+  
+.account-form {
+    display: flex;
+    flex-direction: column;
+    gap: 15px;
+}
+  
+.account-form label {
+    font-size: 18px;
+    font-weight: bold;
+    font-weight: 500;
+    color: #ffffff; /* White text */
+}
+  
+.account-form input {
+    width: 100%;
+    padding: 12px;
+    border: none;
+    border-radius: 8px;
+    font-size: 16px;
+    background: #f5f5f5;
+    box-shadow: inset 0 2px 5px rgba(0, 0, 0, 0.1);
+}
+  
+.account-form button {
+    background: #cf0202;
+    color: white;
+    font-size: 18px;
+    font-weight: bold;
+    border: none;
+    padding: 12px;
+    border-radius: 10px;
+    cursor: pointer;
+    transition: background 0.3s, transform 0.2s;
+    box-shadow: 0 4px 8px rgba(76, 175, 80, 0.2);
+}
+  
+.account-form button:hover {
+    background: #d40303;
+    transform: scale(1.05);
+}
+  
+.account-form button:active {
+    background: #3d8b40;
+    transform: scale(0.98);
+}
+
+.forgot-password-button {
+    background: #cf0202; /* Red background */
+    color: white;
+    border: none;
+    padding: 12px 18px;
+    font-size: 16px;
+    font-weight: bold;
+    border-radius: 10px;
+    cursor: pointer;
+    transition: background 0.3s, transform 0.2s;
+    box-shadow: 0 4px 8px rgba(220, 53, 69, 0.2);
+    margin-top: 10px; /* Adds spacing from the form */
+    width: 100%;
+    text-align: center;
+}
+
+.forgot-password-button:hover {
+    background: #cf0202;
+    transform: scale(1.05);
+}
+
+.forgot-password-button:active {
+    background: #cf0202;
+    transform: scale(0.98);
+}
