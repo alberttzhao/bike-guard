@@ -94,7 +94,7 @@ def read_mpu_data():
 	gyro_z = read_raw_data(GYRO_ZOUT_H)
 
 	print(f"Raw Accel Data: X={accel_x}, Y={accel_y}, Z={accel_z}")  # Debugging
-    print(f"Raw Gyro Data: X={gyro_x}, Y={gyro_y}, Z={gyro_z}")      # Debugging
+	print(f"Raw Gyro Data: X={gyro_x}, Y={gyro_y}, Z={gyro_z}")      # Debugging
 
 	# Convert to g and degrees per second
 	accel_x /= 16384.0
