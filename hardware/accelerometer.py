@@ -12,17 +12,15 @@ import subprocess
 import os
 import csv
 
-#Adding some stuff for picam 
 from flask import Flask, Response
-import picamera
-import io
-from time import sleep
+from picamera2 import Picamera2
+import time
+from io import BytesIO
+from PIL import Image
 
 # threading
 import threading
 
-# Initialize the Flask app
-app = Flask(__name__)
 
 # Replace with your laptop's IP address where Flask is running
 BACKEND_URL = "http://128.197.180.212:5001"
@@ -37,28 +35,34 @@ GYRO_XOUT_H = 0x43
 GYRO_YOUT_H = 0x45
 GYRO_ZOUT_H = 0x47
 
-# Pi camera stream
-def generate_camera_stream():
-	with picamera.PiCamera() as camera:
-		# Camera warm-up time
-		sleep(2)
+app = Flask(__name__)
 
-		stream = io.BytesIO()
-		for _ in camera.capture_continuous(stream, 'jpeg', use_video_port=True):
-			stream.seek(0)
-			frame = stream.read()
+# Initialize Picamera2
+picam2 = Picamera2()
+picam2.configure(picam2.create_video_configuration(main={"size": (640, 480)}))
+picam2.start()
 
-			# Use yield to return the current frame as part of the response
-			yield (b'--frame\r\n'b'Content-Type: image/jpeg\r\n\r\n' + frame + b'\r\n')
+def generate_frames():
+    time.sleep(1)  # Allow the camera to warm up
+    while True:
+        frame = picam2.capture_array()  # Capture frame as NumPy array
+        image = Image.fromarray(frame).convert("RGB")  # Convert to RGB to remove alpha channel
+        buffer = BytesIO()
+        image.save(buffer, format="JPEG")
+        frame_bytes = buffer.getvalue()
 
-			# Reset stream for the next frame
-			stream.seek(0)
-			stream.truncate()
+        yield (b'--frame\r\n'
+               b'Content-Type: image/jpeg\r\n\r\n' + frame_bytes + b'\r\n')
 
-@app.route('/video_stream')
-def video_stream():
-	return Response(generate_camera_stream(),
-			mimetype='multipart/x-mixed-replace; boundary=frame')
+@app.route('/video_feed')
+def video_feed():
+    return Response(generate_frames(), mimetype='multipart/x-mixed-replace; boundary=frame')
+
+@app.route('/')
+def index():
+    return '<h1>Raspberry Pi Camera Stream</h1><img src="/video_feed" width="640" height="480">'
+
+
 
 # Initialize MPU-6050
 def init_mpu():
@@ -120,6 +124,7 @@ def send_notification(message):
             print(f"Response: {response.text}")
     except Exception as e:
         print(f"Error sending notification to {BACKEND_URL}: {e}")
+		
 # Calculate Pitch and Roll
 def calculate_pitch_roll(accel):
 	ax = accel["x"]
@@ -174,7 +179,7 @@ def accel_thread():
  		print("Measurement stopped by User")
 
 def camera_thread():
-	app.run(host='128.197.180.227', port=8000, threaded=True)
+	app.run(host="0.0.0.0", port=5000, debug=False, threaded=True)
 
 
 if __name__ =="__main__":
