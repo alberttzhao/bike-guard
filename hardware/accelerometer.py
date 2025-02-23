@@ -1,4 +1,6 @@
 import smbus
+from smbus2 import SMBus
+
 import time
 import math
 import requests
