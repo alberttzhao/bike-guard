@@ -102,25 +102,24 @@ def read_mpu_data():
 
 
 def send_notification(message):
-	try:
-		response = requests.post(
-			f'{BACKEND_URL}/api/notifications',
-			json={
-				'message': message,
-				'type': 'movement'
-			},
-			headers={
-				'Content-Type': 'application/json'
-			}
-		)
-		if response.status_code == 201:
-			print(f"Notification sent successfully to {BACKEND_URL}")
+    try:
+        response = requests.post(
+            f'{BACKEND_URL}/api/notifications',
+            json={
+                'message': message,
+                'type': 'movement'
+            },
+            headers={
+                'Content-Type': 'application/json'
+            }
+        )
+        if response.status_code == 201:
+            print(f"Notification sent successfully to {BACKEND_URL}")
         else:
-			print(f"Failed to send notification: {response.status_code}")
-			print(f"Response: {response.text}")
-	except Exception as e:
-		print(f"Error sending notification to {BACKEND_URL}: {e}")
-
+            print(f"Failed to send notification: {response.status_code}")
+            print(f"Response: {response.text}")
+    except Exception as e:
+        print(f"Error sending notification to {BACKEND_URL}: {e}")
 # Calculate Pitch and Roll
 def calculate_pitch_roll(accel):
 	ax = accel["x"]
