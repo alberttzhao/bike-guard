@@ -187,7 +187,7 @@ def camera_thread():
 if __name__ =="__main__":
 
 	# Initialize the I2C bus
-	bus = smbus.SMBus(0)
+	bus = smbus.SMBus(1)
 
 	# initializae MPU-5060
 	init_mpu()
