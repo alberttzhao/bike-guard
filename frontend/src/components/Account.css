@@ -1,0 +1,180 @@
+/* Full Page Wrapper */
+.account-page {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    position: relative;
+    padding: 20px;
+    font-family: 'Inter', sans-serif;
+  }
+    
+  .back-button {
+    position: absolute;
+    top: 10px;
+    left: 10px;
+    background: #1a508b; /* Navy primary color */
+    color: white;
+    border: none;
+    padding: 10px 16px;
+    font-size: 15px;
+    font-weight: 500;
+    border-radius: 8px;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    box-shadow: 0 2px 6px rgba(26, 80, 139, 0.25);
+    display: flex;
+    align-items: center;
+    gap: 6px;
+  }
+    
+  .back-button:hover {
+    background: #164579;
+    transform: translateY(-2px);
+  }
+  
+  .back-button:active {
+    background: #123c68;
+    transform: translateY(0);
+  }
+    
+  .account-container {
+    max-width: 600px;
+    width: 100%;
+    background: white;
+    border-radius: 12px;
+    padding: 28px;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+    margin-top: 50px; /* Creates space below back button */
+    border: 1px solid rgba(0, 0, 0, 0.08);
+  }
+    
+  .account-title {
+    font-size: 22px;
+    font-weight: 600;
+    text-align: center;
+    margin-bottom: 24px;
+    color: #1a508b; /* Navy primary color */
+    letter-spacing: 0.3px;
+  }
+    
+  .account-form {
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+  }
+    
+  .account-form label {
+    font-size: 15px;
+    font-weight: 500;
+    color: #2c3e50;
+    margin-bottom: 6px;
+    display: block;
+  }
+    
+  .account-form input {
+    width: 100%;
+    padding: 12px 14px;
+    border: 1px solid rgba(0, 0, 0, 0.15);
+    border-radius: 8px;
+    font-size: 15px;
+    background: #f8f9fa;
+    transition: all 0.2s ease;
+  }
+  
+  .account-form input:focus {
+    border-color: #1a508b;
+    outline: none;
+    box-shadow: 0 0 0 3px rgba(26, 80, 139, 0.1);
+  }
+    
+  .account-form button {
+    background: #1a508b;
+    color: white;
+    font-size: 16px;
+    font-weight: 500;
+    border: none;
+    padding: 14px;
+    border-radius: 8px;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    box-shadow: 0 2px 6px rgba(26, 80, 139, 0.25);
+    margin-top: 10px;
+  }
+    
+  .account-form button:hover {
+    background: #164579;
+    transform: translateY(-2px);
+  }
+    
+  .account-form button:active {
+    background: #123c68;
+    transform: translateY(0);
+  }
+  
+  .forgot-password-button {
+    background: none;
+    color: #1a508b;
+    border: none;
+    padding: 12px 0;
+    font-size: 14px;
+    font-weight: 500;
+    cursor: pointer;
+    transition: color 0.2s;
+    margin-top: 10px;
+    width: 100%;
+    text-align: center;
+    text-decoration: underline;
+  }
+  
+  .forgot-password-button:hover {
+    color: #164579;
+  }
+  
+  /* Form field groups */
+  .form-group {
+    display: flex;
+    flex-direction: column;
+  }
+  
+  /* Optional field note/hint styling */
+  .field-note {
+    font-size: 12px;
+    color: #6c757d;
+    margin-top: 4px;
+  }
+  
+  /* Optional field validation error styling */
+  .field-error {
+    font-size: 13px;
+    color: #dc3545;
+    margin-top: 6px;
+  }
+  
+  /* Add an account action section at the bottom */
+  .account-actions {
+    margin-top: 30px;
+    padding-top: 20px;
+    border-top: 1px solid rgba(0, 0, 0, 0.08);
+  }
+  
+  .danger-zone {
+    margin-top: 10px;
+  }
+  
+  .delete-account-button {
+    background: none;
+    color: #dc3545;
+    border: 1px solid #dc3545;
+    padding: 10px 16px;
+    font-size: 14px;
+    font-weight: 500;
+    border-radius: 8px;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    width: 100%;
+    margin-top: 5px;
+  }
+  
+  .delete-account-button:hover {
+    background: rgba(220, 53, 69, 0.1);
+  }

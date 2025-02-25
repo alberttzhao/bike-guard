@@ -10,7 +10,7 @@ const CameraFeed = () => {
       try {
         if (imgRef.current) {
           // Set the src directly to the stream URL
-          imgRef.current.src = 'http://128.197.180.227:8000/video_stream';
+          imgRef.current.src = 'http://128.197.180.238:5000/api/video-feed';
         }
       } catch (error) {
         console.error('Error starting video stream:', error);
@@ -28,22 +28,20 @@ const CameraFeed = () => {
   }, []);
 
   return (
-    <div className="camera-feed-container">
-      <div className="camera-header">
-        <h2 className="section-title">Live View</h2>
+    <div className="video-container">
+      <div className="map-header">
+        <h3>Live View</h3>
         <div className="camera-controls">
           <button className="camera-control-btn">
             <span className="material-icons">fullscreen</span>
           </button>
         </div>
       </div>
-      <div className="video-container">
-        <img
-          ref={imgRef}
-          className="video-player"
-          alt="Camera Feed"
-        />
-      </div>
+      <img
+        ref={imgRef}
+        className="video-player"
+        alt="Camera Feed"
+      />
     </div>
   );
 }

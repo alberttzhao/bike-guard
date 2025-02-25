@@ -1,13 +1,14 @@
 import React, { useState, useEffect } from 'react';
 import './Components.css';
 
-function Notifications() {
+function Notifications({ notificationData }) {
   const [notifications, setNotifications] = useState([]);
 
+  // Fetch notifications from REST API on component mount
   useEffect(() => {
     const fetchNotifications = async () => {
       try {
-        const response = await fetch('http://localhost:5001/api/notifications');
+        const response = await fetch('http://128.197.180.238:5000/api/notifications');
         const data = await response.json();
         setNotifications(data);
       } catch (error) {
@@ -18,15 +19,44 @@ function Notifications() {
     // Fetch immediately
     fetchNotifications();
 
-    // Poll every 5 seconds
-    const interval = setInterval(fetchNotifications, 5000);
+    // Poll every 5 seconds only if socket notifications aren't available
+    const interval = !notificationData ? setInterval(fetchNotifications, 5000) : null;
 
-    return () => clearInterval(interval);
-  }, []);
+    return () => {
+      if (interval) clearInterval(interval);
+    };
+  }, [notificationData]);
+
+  // Update notifications when socket data is received
+  useEffect(() => {
+    if (notificationData && notificationData.length > 0) {
+      setNotifications(notificationData);
+    }
+  }, [notificationData]);
 
   const formatTimestamp = (timestamp) => {
-    const date = new Date(timestamp);
-    return date.toLocaleString();
+    try {
+      const date = new Date(timestamp);
+      return date.toLocaleString();
+    } catch (e) {
+      return 'Unknown time';
+    }
+  };
+
+  // Function to get icon based on notification type
+  const getNotificationIcon = (type) => {
+    switch (type) {
+      case 'movement':
+        return 'warning';
+      case 'alarm':
+        return 'notifications_active';
+      case 'warning':
+        return 'warning';
+      case 'info':
+        return 'info';
+      default:
+        return 'notifications';
+    }
   };
 
   return (
@@ -42,7 +72,7 @@ function Notifications() {
             <div key={notification.id} className="notification-item">
               <div className="notification-icon">
                 <span className="material-icons">
-                  {notification.type === 'movement' ? 'warning' : 'notifications'}
+                  {getNotificationIcon(notification.type)}
                 </span>
               </div>
               <div className="notification-content">

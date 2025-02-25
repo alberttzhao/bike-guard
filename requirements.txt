@@ -3,3 +3,7 @@ flask-cors==4.0.0
 requests==2.31.0
 gpiozero==2.0
 smbus2==0.4.3
+flask-socketio==5.3.6
+python-socketio==5.10.0
+python-engineio==4.8.0
+eventlet==0.33.3
