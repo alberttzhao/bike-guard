@@ -1,0 +1,152 @@
+/* Full Page Wrapper */
+.settings-page {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    position: relative;
+    padding: 20px;
+    font-family: 'Inter', sans-serif;
+  }
+  
+  .back-button {
+    position: absolute;
+    top: 10px;
+    left: 10px;
+    background: #1a508b; /* Navy primary color */
+    color: white;
+    border: none;
+    padding: 10px 16px;
+    font-size: 15px;
+    font-weight: 500;
+    border-radius: 8px;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    box-shadow: 0 2px 6px rgba(26, 80, 139, 0.25);
+    display: flex;
+    align-items: center;
+    gap: 6px;
+  }
+  
+  .back-button:hover {
+    background: #164579;
+    transform: translateY(-2px);
+  }
+  
+  .back-button:active {
+    background: #123c68;
+    transform: translateY(0);
+  }
+  
+  .settings-container {
+    max-width: 600px;
+    width: 100%;
+    background: white;
+    border-radius: 12px;
+    padding: 24px;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+    margin-top: 50px; /* Creates space below back button */
+    border: 1px solid rgba(0, 0, 0, 0.08);
+  }
+  
+  .settings-title {
+    font-size: 22px;
+    font-weight: 600;
+    text-align: center;
+    margin-bottom: 24px;
+    color: #1a508b; /* Navy primary color */
+    letter-spacing: 0.3px;
+  }
+  
+  .settings-list {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+    color: #2c3e50; /* Dark text */
+  }
+  
+  .settings-list li {
+    padding: 16px;
+    font-size: 16px;
+    font-weight: 400;
+    border-bottom: 1px solid rgba(0, 0, 0, 0.08);
+    cursor: pointer;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    transition: all 0.2s ease;
+    border-radius: 6px;
+  }
+  
+  .settings-list li:hover {
+    background: rgba(26, 80, 139, 0.05);
+  }
+  
+  .settings-list li::after {
+    content: "→"; /* Cleaner arrow */
+    font-size: 18px;
+    color: #6c757d;
+    transition: transform 0.2s, color 0.2s;
+  }
+  
+  .settings-list li:hover::after {
+    transform: translateX(5px);
+    color: #1a508b;
+  }
+  
+  /* Add this for a more polished bottom item */
+  .settings-list li:last-child {
+    border-bottom: none;
+  }
+  
+  /* Add this for sub-settings or descriptions */
+  .setting-description {
+    font-size: 14px;
+    color: #6c757d;
+    margin-top: 4px;
+  }
+  
+  /* Additional styling for toggles if needed */
+  .toggle-switch {
+    position: relative;
+    display: inline-block;
+    width: 48px;
+    height: 24px;
+  }
+  
+  .toggle-switch input {
+    opacity: 0;
+    width: 0;
+    height: 0;
+  }
+  
+  .toggle-slider {
+    position: absolute;
+    cursor: pointer;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background-color: #ccc;
+    transition: .4s;
+    border-radius: 24px;
+  }
+  
+  .toggle-slider:before {
+    position: absolute;
+    content: "";
+    height: 18px;
+    width: 18px;
+    left: 3px;
+    bottom: 3px;
+    background-color: white;
+    transition: .4s;
+    border-radius: 50%;
+  }
+  
+  input:checked + .toggle-slider {
+    background-color: #1a508b;
+  }
+  
+  input:checked + .toggle-slider:before {
+    transform: translateX(24px);
+  }

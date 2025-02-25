@@ -1,0 +1,69 @@
+# BikeGuard - Implementing Socket.io for Real-time Updates
+
+## 1. Setup Instructions
+
+### Install Required Packages
+
+```bash
+# In your React project folder
+npm install socket.io-client
+```
+
+### Update Your Files
+
+1. Replace your current App.js with the provided code in the "Complete Updated App.js" artifact
+2. Update your Notifications component with the code in the "Updated Notifications Component" artifact
+
+### Configure Backend URL
+
+In the App.js file, you'll see a line where the backend URL is set:
+
+```javascript
+const backendUrl = 'http://localhost:5001';
+```
+
+Change this to match your Raspberry Pi's IP address and port, for example:
+```javascript
+const backendUrl = 'http://192.168.1.100:5001';
+```
+
+## 2. Testing Your Implementation
+
+1. First, make sure your Flask backend is running (the updated app.py from earlier)
+2. Start your React app: `npm start`
+3. Log in with Google
+4. You should see:
+   - The map displaying the simulated bike location
+   - Notifications appearing in real-time
+   - The bike location updating every 30 seconds (based on the simulation in the backend)
+
+## 3. How to Verify It's Working
+
+Check your browser console for these messages:
+- "Connected to server" - Shows the Socket.io connection is established
+- "Received bike data: {...}" - Shows location updates are coming through
+- "Received notification: {...}" - Shows notifications are working
+
+## 4. Troubleshooting
+
+If you see connection errors:
+1. Make sure your backend URL is correct
+2. Check that your Flask server is running
+3. Ensure CORS is properly configured on the backend
+4. Try testing with a REST API call to `/api/bike-status` to check connectivity
+
+## 5. Making the Map Component Work
+
+Make sure your LiveMap component is properly configured:
+- The Google Maps API key is set
+- The bike marker icon is available in your public folder
+- The component is receiving the location data from the props
+
+## 6. Next Steps
+
+Once your Raspberry Pi is set up with actual GPS hardware:
+1. Modify the app.py file to receive GPS coordinates from your hardware
+2. Remove the simulation code
+3. Update the location tracking endpoints to save real GPS data
+
+No other changes will be needed on your React frontend - it's already set up to receive and display the real data when it becomes available.
