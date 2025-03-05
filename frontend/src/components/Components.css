@@ -82,3 +82,27 @@
   .camera-control-btn:hover {
     background: var(--background-color);
   }
+
+  /* Add to your Components.css */
+.camera-error {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  height: 100%;
+  background-color: #f8f9fa;
+  color: #6c757d;
+  text-align: center;
+  padding: 20px;
+}
+
+.camera-error .material-icons {
+  font-size: 48px;
+  margin-bottom: 16px;
+  color: #dc3545;
+}
+
+.camera-error p {
+  font-size: 16px;
+  margin: 0;
+}
