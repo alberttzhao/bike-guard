@@ -14,6 +14,7 @@ function App() {
   const [socket, setSocket] = useState(null);
   const [isTracking, setIsTracking] = useState(true);
   const [notifications, setNotifications] = useState([]);
+  const [isOnline, setIsOnline] = useState(navigator.onLine);
   
   // Bike data from the backend
   const [bikeData, setBikeData] = useState({
@@ -24,9 +25,24 @@ function App() {
     last_updated: null
   });
   
+  // Handle online/offline status
+  useEffect(() => {
+    const handleOnlineStatusChange = () => {
+      setIsOnline(navigator.onLine);
+    };
+
+    window.addEventListener('online', handleOnlineStatusChange);
+    window.addEventListener('offline', handleOnlineStatusChange);
+
+    return () => {
+      window.removeEventListener('online', handleOnlineStatusChange);
+      window.removeEventListener('offline', handleOnlineStatusChange);
+    };
+  }, []);
+  
   // Connect to backend Socket.io when logged in
   useEffect(() => {
-    if (!isLoggedIn) return;
+    if (!isLoggedIn || !isOnline) return;
     
     // Get your Raspberry Pi's IP address from the environment or configure it
     // Replace this with your actual Raspberry Pi IP or hostname
@@ -77,9 +93,14 @@ function App() {
       console.log('Disconnecting socket');
       newSocket.disconnect();
     };
-  }, [isLoggedIn]);
+  }, [isLoggedIn, isOnline]);
 
   const handleAlarmTrigger = async () => {
+    if (!isOnline) {
+      alert('Cannot trigger alarm while offline');
+      return;
+    }
+    
     try {
       // Get your Raspberry Pi's IP address
       const backendUrl = 'http://128.197.180.238';
@@ -111,6 +132,11 @@ function App() {
   };
 
   const handleStopAlarm = async () => {
+    if (!isOnline) {
+      alert('Cannot stop alarm while offline');
+      return;
+    }
+    
     try {
       // Get your Raspberry Pi's IP address
       const backendUrl = 'http://128.197.180.238';
@@ -144,16 +170,51 @@ function App() {
   const handleGoogleLoginSuccess = (credentialResponse) => {
     const decoded = jwtDecode(credentialResponse.credential);
     console.log('Logged in user:', decoded);
+    
+    // Save login state to localStorage for offline access
+    try {
+      localStorage.setItem('bikeGuardUserLoggedIn', 'true');
+      localStorage.setItem('bikeGuardUserData', JSON.stringify({
+        name: decoded.name,
+        email: decoded.email,
+        picture: decoded.picture
+      }));
+    } catch (e) {
+      console.error('Failed to save user data to localStorage:', e);
+    }
+    
     setIsLoggedIn(true);
   };
 
   const handleGoogleLoginError = () => {
     console.log('Google login failed');
   };
+  
+  // Check if previously logged in for PWA persistence
+  useEffect(() => {
+    try {
+      const wasLoggedIn = localStorage.getItem('bikeGuardUserLoggedIn') === 'true';
+      if (wasLoggedIn) {
+        setIsLoggedIn(true);
+      }
+    } catch (e) {
+      console.error('Failed to retrieve login state from localStorage:', e);
+    }
+  }, []);
+  
+  // Offline banner component
+  const OfflineBanner = () => (
+    <div className="offline-banner">
+      <span className="material-icons">cloud_off</span>
+      <span>You're offline. Some features may be limited.</span>
+    </div>
+  );
 
   return (
     <GoogleOAuthProvider clientId="778034392296-684g0b5av6d68m1tqbn7rtael8ic106s.apps.googleusercontent.com">
       <div className="app-container">
+        {!isOnline && isLoggedIn && <OfflineBanner />}
+        
         {!isLoggedIn ? (
           <div className="login-container">
             <div className="login-logo">
@@ -164,16 +225,23 @@ function App() {
             <p>Your personal bicycle security system. Sign in to monitor and protect your bike in real-time.</p>
             
             <div className="login-button-container">
-              <GoogleLogin
-                onSuccess={handleGoogleLoginSuccess}
-                onError={handleGoogleLoginError}
-                useOneTap
-                theme="filled_blue"
-                shape="pill"
-                size="large"
-                text="signin_with"
-                locale="en"
-              />
+              {!isOnline ? (
+                <div className="offline-login-message">
+                  <span className="material-icons">cloud_off</span>
+                  <p>Internet connection required to sign in</p>
+                </div>
+              ) : (
+                <GoogleLogin
+                  onSuccess={handleGoogleLoginSuccess}
+                  onError={handleGoogleLoginError}
+                  useOneTap
+                  theme="filled_blue"
+                  shape="pill"
+                  size="large"
+                  text="signin_with"
+                  locale="en"
+                />
+              )}
             </div>
             
             <div className="features-list">
@@ -207,6 +275,16 @@ function App() {
                 <button className="settings-btn" onClick={() => setCurrentPage('settings')}>
                   <span className="material-icons">settings</span>
                 </button>
+                <button 
+                  className="logout-btn" 
+                  onClick={() => {
+                    localStorage.removeItem('bikeGuardUserLoggedIn');
+                    localStorage.removeItem('bikeGuardUserData');
+                    setIsLoggedIn(false);
+                  }}
+                >
+                  <span className="material-icons">logout</span>
+                </button>
               </div>
             </header>
 
@@ -223,17 +301,26 @@ function App() {
                   </div>
                   
                   <div className="controls-section">
-                    <button className="alarm-button" onClick={handleAlarmTrigger}>
+                    <button 
+                      className="alarm-button" 
+                      onClick={handleAlarmTrigger}
+                      disabled={!isOnline}
+                    >
                       <span className="material-icons">alarm</span>
                       Sound Alarm
                     </button>
-                    <button className="alarm-button stop-alarm" onClick={handleStopAlarm}>
+                    <button 
+                      className="alarm-button stop-alarm" 
+                      onClick={handleStopAlarm}
+                      disabled={!isOnline}
+                    >
                       <span className="material-icons">alarm_off</span>
                       Stop Alarm
                     </button>
                     <button 
                       className={`tracking-button ${isTracking ? 'active' : ''}`} 
                       onClick={() => setIsTracking(!isTracking)}
+                      disabled={!isOnline}
                     >
                       <span className="material-icons">
                         {isTracking ? 'location_on' : 'location_off'}
@@ -249,6 +336,17 @@ function App() {
               )}
             </main>
           </>
+        )}
+        
+        {/* Full offline screen - shown only if completely offline and can't function */}
+        {!isOnline && !isLoggedIn && (
+          <div className="offline-screen">
+            <div className="offline-message">
+              <span className="material-icons">cloud_off</span>
+              <h2>You're offline</h2>
+              <p>Please connect to the internet to use BikeGuard.</p>
+            </div>
+          </div>
         )}
       </div>
     </GoogleOAuthProvider>
