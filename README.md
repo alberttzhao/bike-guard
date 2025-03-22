@@ -49,6 +49,33 @@ npm run build
 serve -s build
 ```
 
+### For Those with No Python or Flask 
+1. Install Prerequisites 
+Install Node.js and npm
+- Node.js includes npm (Node Package Manager) by default
+
+For Windows/MacOS:
+1. Download the installer from nodejs.org
+2. Run the installer and follow the instructions
+3. Verify installation:
+```bash
+node --version
+npm --version
+```
+
+For Linux (Ubuntu/Debian):
+```bash
+sudo apt update
+sudo apt install nodejs npm
+```
+
+Install Python
+```bash
+brew install python
+```
+
+And then repeat all the necessary steps to setup front and backend
+
 ### Hardware Setup (Raspberry Pi)
 1. Activate the virtual environment and install dependencies (same as backend setup)
 2. Run the node script:
