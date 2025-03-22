@@ -7,39 +7,46 @@ A bike security system using Raspberry Pi for movement detection and notificatio
 
 ## Setup Instructions
 
-### Backend Setup
-1. Create and activate a virtual environment:
+### Frontend Setup
 ```bash
-# On Windows:
-python -m venv venv
-venv\Scripts\activate
-
-# On macOS/Linux:
-python3 -m venv venv
-source venv/bin/activate
+# Go to the frontend directory
+cd bike-guard/frontend
+# Install all frontend dependencies using npm:
+npm install
+# This single command will install all the packages defined in package.json file
+```
+To start the development server:
+```bash
+npm start
 ```
 
-2. Install required dependencies:
+### Backend Setup
 ```bash
+# Go to the backend directory
+cd ../backend
+# Create a python virtual environment
+python -m venv .venv
+# Activate the virtual environment:
+# on windows:
+.venv\Scripts\activate
+# on mac:
+source .venv/bin/activate
+
+# Then, install all backend dependencies:
 pip install -r requirements.txt
 ```
 
-3. Start the Flask backend:
+To start the flask server:
 ```bash
-cd backend
 python app.py
 ```
 
-### Frontend Setup
-1. Install Node.js dependencies:
+### For Production and Testing
+To build the frontend for production or PWA testing:
 ```bash
 cd frontend
-npm install
-```
-
-2. Start the React development server:
-```bash
-npm start
+npm run build
+serve -s build
 ```
 
 ### Hardware Setup (Raspberry Pi)
