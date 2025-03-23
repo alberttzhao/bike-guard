@@ -4,9 +4,12 @@ import Notifications from './components/Notifications';
 import CameraFeed from './components/CameraFeed';
 import Settings from './components/Settings';
 import LiveMap from './components/LiveMap';
-import { GoogleOAuthProvider, GoogleLogin } from '@react-oauth/google';
-import { jwtDecode } from 'jwt-decode';
+import AuthForm from './components/AuthForm';
+import { GoogleOAuthProvider } from '@react-oauth/google';
 import { io } from 'socket.io-client';
+import { onAuthStateChanged, signOut } from 'firebase/auth';
+import { auth, db } from './firebase';
+import { doc, setDoc, collection, addDoc, serverTimestamp } from 'firebase/firestore';
 
 function App() {
   const [isLoggedIn, setIsLoggedIn] = useState(false);
@@ -15,6 +18,7 @@ function App() {
   const [isTracking, setIsTracking] = useState(true);
   const [notifications, setNotifications] = useState([]);
   const [isOnline, setIsOnline] = useState(navigator.onLine);
+  const [userData, setUserData] = useState(null);
   
   // Bike data from the backend
   const [bikeData, setBikeData] = useState({
@@ -24,6 +28,54 @@ function App() {
     is_alarm_active: false,
     last_updated: null
   });
+  
+  // Function to save bike location to Firestore
+  const saveBikeLocation = async (userId, location) => {
+    if (!userId || !location) return false;
+
+    try {
+      // Add to location history collection
+      await addDoc(collection(db, 'users', userId, 'locationHistory'), {
+        lat: location.lat,
+        lng: location.lng,
+        timestamp: serverTimestamp()
+      });
+      
+      // Update current location in user document
+      await setDoc(doc(db, 'users', userId), {
+        bikeData: {
+          currentLocation: location,
+          lastUpdated: serverTimestamp()
+        }
+      }, { merge: true });
+      
+      console.log('Bike location saved to Firestore');
+      return true;
+    } catch (error) {
+      console.error('Error saving location to Firestore:', error);
+      return false;
+    }
+  };
+
+  // Function to save notification to Firestore
+  const saveNotification = async (userId, notification) => {
+    if (!userId || !notification) return false;
+    
+    try {
+      // Add to notifications collection
+      await addDoc(collection(db, 'users', userId, 'notifications'), {
+        ...notification,
+        read: false,
+        timestamp: serverTimestamp()
+      });
+      
+      console.log('Notification saved to Firestore');
+      return true;
+    } catch (error) {
+      console.error('Error saving notification to Firestore:', error);
+      return false;
+    }
+  };
   
   // Handle online/offline status
   useEffect(() => {
@@ -40,13 +92,71 @@ function App() {
     };
   }, []);
   
+  // Handle Firebase authentication state
+  useEffect(() => {
+    const unsubscribe = onAuthStateChanged(auth, (user) => {
+      if (user) {
+        // User is signed in
+        console.log('Firebase auth state: User is signed in', user);
+        
+        const userInfo = {
+          uid: user.uid,
+          name: user.displayName || user.email?.split('@')[0] || 'User',
+          email: user.email,
+          picture: user.photoURL
+        };
+        
+        setUserData(userInfo);
+        setIsLoggedIn(true);
+        
+        // Save login state to localStorage for offline access
+        try {
+          localStorage.setItem('bikeGuardUserLoggedIn', 'true');
+          localStorage.setItem('bikeGuardUserData', JSON.stringify(userInfo));
+          
+          // Update last login time in Firestore
+          setDoc(doc(db, 'users', user.uid), {
+            lastLogin: serverTimestamp(),
+            displayName: userInfo.name,
+            email: user.email,
+            photoURL: user.photoURL
+          }, { merge: true }).catch(error => {
+            console.error('Error updating last login:', error);
+          });
+          
+        } catch (e) {
+          console.error('Failed to save user data to localStorage:', e);
+        }
+      } else {
+        // Check localStorage as fallback for PWA
+        try {
+          const wasLoggedIn = localStorage.getItem('bikeGuardUserLoggedIn') === 'true';
+          const storedUserData = JSON.parse(localStorage.getItem('bikeGuardUserData'));
+          
+          if (wasLoggedIn && storedUserData) {
+            setIsLoggedIn(true);
+            setUserData(storedUserData);
+          } else {
+            setIsLoggedIn(false);
+            setUserData(null);
+          }
+        } catch (e) {
+          console.error('Failed to retrieve login state from localStorage:', e);
+          setIsLoggedIn(false);
+          setUserData(null);
+        }
+      }
+    });
+
+    return () => unsubscribe();
+  }, []);
+  
   // Connect to backend Socket.io when logged in
   useEffect(() => {
     if (!isLoggedIn || !isOnline) return;
     
     // Get your Raspberry Pi's IP address from the environment or configure it
-    // Replace this with your actual Raspberry Pi IP or hostname
-    const backendUrl = 'http://128.197.180.238'; //Change it to match your Raspberry Pi's IP address, for example:
+    const backendUrl = 'http://128.197.180.238';
     
     console.log('Connecting to Socket.io server at:', backendUrl);
     
@@ -60,11 +170,21 @@ function App() {
     newSocket.on('bike_data', (data) => {
       console.log('Received bike data:', data);
       setBikeData(data);
+      
+      // Save to Firestore if we have user data
+      if (userData?.uid && data.location) {
+        saveBikeLocation(userData.uid, data.location);
+      }
     });
     
     newSocket.on('new_notification', (notification) => {
       console.log('Received notification:', notification);
       setNotifications(prev => [notification, ...prev]);
+      
+      // Save to Firestore if we have user data
+      if (userData?.uid) {
+        saveNotification(userData.uid, notification);
+      }
     });
     
     newSocket.on('disconnect', () => {
@@ -83,6 +203,13 @@ function App() {
       .then(data => {
         console.log('Fetched notifications:', data);
         setNotifications(data);
+        
+        // Save initial notifications to Firestore
+        if (userData?.uid) {
+          data.forEach(notification => {
+            saveNotification(userData.uid, notification);
+          });
+        }
       })
       .catch(error => {
         console.error('Error fetching notifications:', error);
@@ -93,7 +220,7 @@ function App() {
       console.log('Disconnecting socket');
       newSocket.disconnect();
     };
-  }, [isLoggedIn, isOnline]);
+  }, [isLoggedIn, isOnline, userData]);
 
   const handleAlarmTrigger = async () => {
     if (!isOnline) {
@@ -109,6 +236,15 @@ function App() {
       if (socket && socket.connected) {
         console.log('Triggering alarm via socket');
         socket.emit('trigger_alarm');
+        
+        // Save alarm event to Firestore
+        if (userData?.uid) {
+          await addDoc(collection(db, 'users', userData.uid, 'alarmEvents'), {
+            type: 'alarm_triggered',
+            timestamp: serverTimestamp(),
+            method: 'socket'
+          });
+        }
         return;
       }
       
@@ -122,6 +258,15 @@ function App() {
         const data = await response.json();
         console.log('Alarm response:', data);
         alert('Alarm triggered successfully!');
+        
+        // Save alarm event to Firestore
+        if (userData?.uid) {
+          await addDoc(collection(db, 'users', userData.uid, 'alarmEvents'), {
+            type: 'alarm_triggered',
+            timestamp: serverTimestamp(),
+            method: 'rest_api'
+          });
+        }
       } else {
         alert('Failed to trigger alarm');
       }
@@ -145,6 +290,15 @@ function App() {
       if (socket && socket.connected) {
         console.log('Stopping alarm via socket');
         socket.emit('stop_alarm');
+        
+        // Save alarm event to Firestore
+        if (userData?.uid) {
+          await addDoc(collection(db, 'users', userData.uid, 'alarmEvents'), {
+            type: 'alarm_stopped',
+            timestamp: serverTimestamp(),
+            method: 'socket'
+          });
+        }
         return;
       }
       
@@ -158,6 +312,15 @@ function App() {
         const data = await response.json();
         console.log('Stop alarm response:', data);
         alert('Alarm stopped successfully!');
+        
+        // Save alarm event to Firestore
+        if (userData?.uid) {
+          await addDoc(collection(db, 'users', userData.uid, 'alarmEvents'), {
+            type: 'alarm_stopped',
+            timestamp: serverTimestamp(),
+            method: 'rest_api'
+          });
+        }
       } else {
         alert('Failed to stop alarm');
       }
@@ -168,39 +331,43 @@ function App() {
   };
 
   const handleGoogleLoginSuccess = (credentialResponse) => {
-    const decoded = jwtDecode(credentialResponse.credential);
-    console.log('Logged in user:', decoded);
-    
-    // Save login state to localStorage for offline access
-    try {
-      localStorage.setItem('bikeGuardUserLoggedIn', 'true');
-      localStorage.setItem('bikeGuardUserData', JSON.stringify({
-        name: decoded.name,
-        email: decoded.email,
-        picture: decoded.picture
-      }));
-    } catch (e) {
-      console.error('Failed to save user data to localStorage:', e);
-    }
-    
-    setIsLoggedIn(true);
+    // This will be handled by Firebase Auth now through the AuthForm component
+    console.log('Google login success - Firebase Auth will handle this');
   };
 
   const handleGoogleLoginError = () => {
     console.log('Google login failed');
   };
   
-  // Check if previously logged in for PWA persistence
-  useEffect(() => {
-    try {
-      const wasLoggedIn = localStorage.getItem('bikeGuardUserLoggedIn') === 'true';
-      if (wasLoggedIn) {
-        setIsLoggedIn(true);
-      }
-    } catch (e) {
-      console.error('Failed to retrieve login state from localStorage:', e);
+  // Update logout function
+  const handleLogout = () => {
+    signOut(auth).then(() => {
+      // Remove from localStorage
+      localStorage.removeItem('bikeGuardUserLoggedIn');
+      localStorage.removeItem('bikeGuardUserData');
+      setIsLoggedIn(false);
+      setUserData(null);
+    }).catch((error) => {
+      console.error('Logout error:', error);
+    });
+  };
+  
+  // Toggle tracking
+  const handleTrackingToggle = () => {
+    setIsTracking(!isTracking);
+    
+    // Save user preference to Firestore
+    if (userData?.uid) {
+      setDoc(doc(db, 'users', userData.uid), {
+        settings: {
+          trackingEnabled: !isTracking,
+          lastUpdated: serverTimestamp()
+        }
+      }, { merge: true }).catch(error => {
+        console.error('Error saving tracking preference:', error);
+      });
     }
-  }, []);
+  };
   
   // Offline banner component
   const OfflineBanner = () => (
@@ -224,25 +391,18 @@ function App() {
             <h1>Welcome to BikeGuard</h1>
             <p>Your personal bicycle security system. Sign in to monitor and protect your bike in real-time.</p>
             
-            <div className="login-button-container">
-              {!isOnline ? (
-                <div className="offline-login-message">
-                  <span className="material-icons">cloud_off</span>
-                  <p>Internet connection required to sign in</p>
-                </div>
-              ) : (
-                <GoogleLogin
-                  onSuccess={handleGoogleLoginSuccess}
-                  onError={handleGoogleLoginError}
-                  useOneTap
-                  theme="filled_blue"
-                  shape="pill"
-                  size="large"
-                  text="signin_with"
-                  locale="en"
-                />
-              )}
-            </div>
+            {!isOnline ? (
+              <div className="offline-login-message">
+                <span className="material-icons">cloud_off</span>
+                <p>Internet connection required to sign in</p>
+              </div>
+            ) : (
+              // Use the new AuthForm component instead of just the Google login button
+              <AuthForm 
+                onGoogleLoginSuccess={handleGoogleLoginSuccess}
+                onGoogleLoginError={handleGoogleLoginError}
+              />
+            )}
             
             <div className="features-list">
               <div className="feature-item">
@@ -272,16 +432,17 @@ function App() {
             <header className="app-header">
               <h1>BikeGuard</h1>
               <div className="header-controls">
+                {userData?.picture && (
+                  <div className="user-profile">
+                    <img src={userData.picture} alt="Profile" className="user-avatar" />
+                  </div>
+                )}
                 <button className="settings-btn" onClick={() => setCurrentPage('settings')}>
                   <span className="material-icons">settings</span>
                 </button>
                 <button 
                   className="logout-btn" 
-                  onClick={() => {
-                    localStorage.removeItem('bikeGuardUserLoggedIn');
-                    localStorage.removeItem('bikeGuardUserData');
-                    setIsLoggedIn(false);
-                  }}
+                  onClick={handleLogout}
                 >
                   <span className="material-icons">logout</span>
                 </button>
@@ -319,7 +480,7 @@ function App() {
                     </button>
                     <button 
                       className={`tracking-button ${isTracking ? 'active' : ''}`} 
-                      onClick={() => setIsTracking(!isTracking)}
+                      onClick={handleTrackingToggle}
                       disabled={!isOnline}
                     >
                       <span className="material-icons">
@@ -332,7 +493,10 @@ function App() {
                   <Notifications notificationData={notifications} />
                 </>
               ) : (
-                <Settings onBack={() => setCurrentPage('dashboard')} />
+                <Settings 
+                  onBack={() => setCurrentPage('dashboard')} 
+                  userData={userData}
+                />
               )}
             </main>
           </>
