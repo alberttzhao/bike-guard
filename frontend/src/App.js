@@ -10,6 +10,7 @@ import { io } from 'socket.io-client';
 import { onAuthStateChanged, signOut } from 'firebase/auth';
 import { auth, db } from './firebase';
 import { doc, setDoc, collection, addDoc, serverTimestamp } from 'firebase/firestore';
+import { jwtDecode } from 'jwt-decode';
 
 function App() {
   const [isLoggedIn, setIsLoggedIn] = useState(false);
@@ -98,10 +99,22 @@ function App() {
       if (user) {
         // User is signed in
         console.log('Firebase auth state: User is signed in', user);
+
+        // try to extract first and last name from DisplayName
+        let firstName = '';
+        let lastName = '';
+
+        if (user.displayName) {
+          const nameParts = user.displayName.split(' ');
+          firstName = nameParts[0] || '';
+          lastName = nameParts.slice(1).join(' ') || '';
+        }
         
         const userInfo = {
           uid: user.uid,
           name: user.displayName || user.email?.split('@')[0] || 'User',
+          firstName: firstName,
+          lastName: lastName,
           email: user.email,
           picture: user.photoURL
         };
@@ -118,6 +131,8 @@ function App() {
           setDoc(doc(db, 'users', user.uid), {
             lastLogin: serverTimestamp(),
             displayName: userInfo.name,
+            firstName: firstName,
+            lastName: lastName,
             email: user.email,
             photoURL: user.photoURL
           }, { merge: true }).catch(error => {
@@ -331,8 +346,44 @@ function App() {
   };
 
   const handleGoogleLoginSuccess = (credentialResponse) => {
-    // This will be handled by Firebase Auth now through the AuthForm component
-    console.log('Google login success - Firebase Auth will handle this');
+    const decoded = jwtDecode(credentialResponse.credential);
+    console.log('Logged in user:', decoded);
+    
+    // Extract first and last name from the full name
+    // const nameParts = decoded.name.split(' ');
+    // const firstName = nameParts[0] || '';
+    // const lastName = nameParts.slice(1).join(' ') || '';
+    const firstName = decoded.firstName || (decoded.name ? decoded.name.split(' ')[0] : '');
+    const lastName = decoded.lastName || (decoded.name ? decoded.name.split(' ').slice(1).join(' ') : '');
+
+    
+    // Create user data object
+    const userDataObj = {
+      uid: decoded.sub,
+      email: decoded.email,
+      firstName: firstName,
+      lastName: lastName,
+      displayName: decoded.name,
+      photoURL: decoded.picture,
+      lastLogin: serverTimestamp(),
+      authProvider: decoded.authProvider || 'google'
+    };
+    
+    // Immediately update state with first name
+    setUserData(userDataObj);
+    setIsLoggedIn(true);
+    
+    // Save to Firestore
+    setDoc(doc(db, "users", decoded.sub), userDataObj, { merge: true })
+      .catch(error => console.error("Error saving Google user data:", error));
+    
+    // Save login state to localStorage for offline access
+    try {
+      localStorage.setItem('bikeGuardUserLoggedIn', 'true');
+      localStorage.setItem('bikeGuardUserData', JSON.stringify(userDataObj));
+    } catch (e) {
+      console.error('Failed to save user data to localStorage:', e);
+    }
   };
 
   const handleGoogleLoginError = () => {
@@ -430,13 +481,8 @@ function App() {
         ) : (
           <>
             <header className="app-header">
-              <h1>BikeGuard</h1>
+              <h1>BikeGuard {userData?.firstName ? `| ${userData.firstName}` : (userData?.name ? `| ${userData.name.split(' ')[0]}` : '')}</h1>
               <div className="header-controls">
-                {userData?.picture && (
-                  <div className="user-profile">
-                    <img src={userData.picture} alt="Profile" className="user-avatar" />
-                  </div>
-                )}
                 <button className="settings-btn" onClick={() => setCurrentPage('settings')}>
                   <span className="material-icons">settings</span>
                 </button>

@@ -1,10 +1,8 @@
-// src/components/AuthForm.js
+// src/components/AuthForm.js (updated)
 import React, { useState } from 'react';
 import { GoogleLogin } from '@react-oauth/google';
 import { jwtDecode } from 'jwt-decode';
 import './AuthForm.css';
-
-// Import Firebase auth methods
 import { 
   createUserWithEmailAndPassword, 
   signInWithEmailAndPassword, 
@@ -18,6 +16,8 @@ const AuthForm = ({ onGoogleLoginSuccess, onGoogleLoginError }) => {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [confirmPassword, setConfirmPassword] = useState('');
+  const [firstName, setFirstName] = useState('');
+  const [lastName, setLastName] = useState('');
   const [error, setError] = useState('');
   const [loading, setLoading] = useState(false);
 
@@ -27,10 +27,18 @@ const AuthForm = ({ onGoogleLoginSuccess, onGoogleLoginError }) => {
     setLoading(true);
 
     // Validation for signup
-    if (isSignUp && password !== confirmPassword) {
-      setError('Passwords do not match');
-      setLoading(false);
-      return;
+    if (isSignUp) {
+      if (password !== confirmPassword) {
+        setError('Passwords do not match');
+        setLoading(false);
+        return;
+      }
+      
+      if (firstName.trim() === '' || lastName.trim() === '') {
+        setError('First name and last name are required');
+        setLoading(false);
+        return;
+      }
     }
 
     try {
@@ -40,15 +48,18 @@ const AuthForm = ({ onGoogleLoginSuccess, onGoogleLoginError }) => {
         // Create new user
         userCredential = await createUserWithEmailAndPassword(auth, email, password);
         
-        // Set display name (optional)
+        // Set display name as "First Last"
+        const fullName = `${firstName} ${lastName}`;
         await updateProfile(userCredential.user, {
-          displayName: email.split('@')[0] // Simple display name from email
+          displayName: fullName
         });
         
-        // Create user document in Firestore
+        // Create user document in Firestore with first and last name
         await setDoc(doc(db, "users", userCredential.user.uid), {
           email: email,
-          displayName: email.split('@')[0],
+          firstName: firstName,
+          lastName: lastName,
+          displayName: fullName,
           createdAt: serverTimestamp(),
           lastLogin: serverTimestamp(),
           settings: {
@@ -72,17 +83,21 @@ const AuthForm = ({ onGoogleLoginSuccess, onGoogleLoginError }) => {
       localStorage.setItem('bikeGuardUserData', JSON.stringify({
         uid: user.uid,
         email: user.email,
-        name: user.displayName || email.split('@')[0],
+        displayName: user.displayName,
+        firstName: firstName || (user.displayName ? user.displayName.split(' ')[0] : ''),
+        lastName: lastName || (user.displayName ? user.displayName.split(' ')[1] || '' : ''),
         authProvider: 'email'
       }));
       
       // Create a credential-like object for the onGoogleLoginSuccess handler
       const credentialObj = {
         credential: JSON.stringify({
-          name: user.displayName || email.split('@')[0],
+          name: user.displayName,
           email: user.email,
           sub: user.uid,
-          picture: user.photoURL || null
+          picture: user.photoURL || null,
+          firstName: firstName,
+          lastName: lastName
         })
       };
       
@@ -128,6 +143,32 @@ const AuthForm = ({ onGoogleLoginSuccess, onGoogleLoginError }) => {
       <form onSubmit={handleEmailAuth} className="auth-form">
         {error && <div className="auth-error">{error}</div>}
         
+        {isSignUp && (
+          <div className="name-fields">
+            <div className="form-group">
+              <label htmlFor="firstName">First Name</label>
+              <input
+                type="text"
+                id="firstName"
+                value={firstName}
+                onChange={(e) => setFirstName(e.target.value)}
+                required={isSignUp}
+              />
+            </div>
+            
+            <div className="form-group">
+              <label htmlFor="lastName">Last Name</label>
+              <input
+                type="text"
+                id="lastName"
+                value={lastName}
+                onChange={(e) => setLastName(e.target.value)}
+                required={isSignUp}
+              />
+            </div>
+          </div>
+        )}
+        
         <div className="form-group">
           <label htmlFor="email">Email</label>
           <input
@@ -158,7 +199,7 @@ const AuthForm = ({ onGoogleLoginSuccess, onGoogleLoginError }) => {
               id="confirmPassword"
               value={confirmPassword}
               onChange={(e) => setConfirmPassword(e.target.value)}
-              required
+              required={isSignUp}
             />
           </div>
         )}

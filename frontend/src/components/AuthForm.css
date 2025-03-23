@@ -102,3 +102,20 @@
     color: var(--text-secondary);
     font-size: 12px;
   }
+
+  .name-fields {
+    display: flex;
+    gap: 16px;
+    width: 100%;
+  }
+  
+  .name-fields .form-group {
+    flex: 1;
+  }
+  
+  @media (max-width: 576px) {
+    .name-fields {
+      flex-direction: column;
+      gap: 8px;
+    }
+  }

@@ -3,12 +3,12 @@ import './Settings.css';
 import Account from './Account';
 import Support from './Support';
 
-const Settings = ({ onBack }) => {
+const Settings = ({ onBack, userData }) => {
   const [showAccount, setShowAccount] = useState(false);
   const [showSupport, setShowSupport] = useState(false);
 
   if (showAccount) {
-    return <Account onBack={() => setShowAccount(false)} />;
+    return <Account onBack={() => setShowAccount(false)} userData={userData} />;
   }
 
   if (showSupport) {
