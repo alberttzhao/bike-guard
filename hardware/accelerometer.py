@@ -140,7 +140,7 @@ def calculate_pitch_roll(accel):
 	roll = math.atan2(-ax, az) * (180 / math.pi)
 
 	#buzzer = Buzzer(2)
-	buzzer = Buzzer(17)
+	buzzer = Buzzer(27)
 
 	try:
 		if pitch > 5 or roll > 10:
