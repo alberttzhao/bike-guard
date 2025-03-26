@@ -8,6 +8,8 @@ import sys
 import gpiozero
 from gpiozero import Buzzer
 from time import sleep
+import RPi.GPIO as GPIO
+import time
 
 #adding some stuff for csv file 
 import subprocess
@@ -43,6 +45,14 @@ app = Flask(__name__)
 picam2 = Picamera2()
 picam2.configure(picam2.create_video_configuration(main={"size": (640, 480)}))
 picam2.start()
+
+buzzer_pin = 17  # Adjust to the GPIO pin you're using
+GPIO.setmode(GPIO.BCM)
+GPIO.setup(buzzer_pin, GPIO.OUT)
+
+def control_buzzer(state):
+    GPIO.output(buzzer_pin, state)
+
 
 def generate_frames():
     time.sleep(1)  # Allow the camera to warm up
@@ -139,20 +149,17 @@ def calculate_pitch_roll(accel):
 	pitch = math.atan2(ay, math.sqrt(ax * ax + az * az)) * (180 / math.pi)
 	roll = math.atan2(-ax, az) * (180 / math.pi)
 
-	#buzzer = Buzzer(2)
-	buzzer = Buzzer(27)
-
 	try:
 		if pitch > 5 or roll > 10:
 			print("Movement detected!")
-			buzzer.on()  # Turn on the buzzer
-			# Send notification when movement is detected
+			control_buzzer(GPIO.HIGH)  # Turn buzzer on
+			time.sleep(1)  # Buzzer on for 1 second
+			control_buzzer(GPIO.LOW)  # Turn buzzer off
+			time.sleep(1)  # Buzzer off for 1 second
 			send_notification("Your bike is moving too much!")
-			sleep(1)
-			buzzer.off()
 	except KeyboardInterrupt:
 		print("\nExiting program.")
-		buzzer.off()
+		GPIO.cleanup()
 
 	return pitch, roll
 
