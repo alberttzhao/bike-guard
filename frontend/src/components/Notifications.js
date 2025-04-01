@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import './Components.css';
 
-function Notifications({ notificationData }) {
+function Notifications({ notificationData, onBack }) {
   const [notifications, setNotifications] = useState([]);
 
   // Fetch notifications from REST API on component mount
@@ -61,6 +61,9 @@ function Notifications({ notificationData }) {
 
   return (
     <div className="notifications-container">
+      <button className="back-button" onClick={onBack}>
+        Back
+      </button>
       <h2 className="section-title">Recent Events</h2>
       <div className="notifications-list">
         {notifications.length === 0 ? (

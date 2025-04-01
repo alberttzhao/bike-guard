@@ -3,12 +3,14 @@ import './Settings.css';
 import Account from './Account';
 import Support from './Support';
 import Bluetooth from './Bluetooth';
+import Notifications from './Notifications';
 
 
 const Settings = ({ onBack, userData }) => {
   const [showAccount, setShowAccount] = useState(false);
   const [showSupport, setShowSupport] = useState(false);
   const [showBluetooth, setShowBluetooth] = useState(false);
+  const [showNotifications, setShowNotifications] = useState(false);
 
   if (showAccount) {
     return <Account onBack={() => setShowAccount(false)} userData={userData} />;
@@ -20,6 +22,10 @@ const Settings = ({ onBack, userData }) => {
 
   if (showBluetooth) {
     return <Bluetooth onBack={() => setShowBluetooth(false)} />;
+  }
+  
+  if (showNotifications) {
+    return <Notifications notificationData={userData.notifications} onBack={() => setShowNotifications(false)} />;
   }
 
   return (
@@ -33,7 +39,7 @@ const Settings = ({ onBack, userData }) => {
 
         <ul className="settings-list">
           <li onClick={() => setShowAccount(true)}>Account</li>
-          <li>Notifications</li>
+          <li onClick={() => setShowNotifications(true)}>Notifications</li>
           <li>My BikeGuard</li>
           <li onClick={() => setShowSupport(true)}>Support</li>
           <li onClick={() => setShowBluetooth(true)}>Connect My Device</li>
