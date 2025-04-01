@@ -2,10 +2,13 @@ import React, { useState } from 'react';
 import './Settings.css';
 import Account from './Account';
 import Support from './Support';
+import Bluetooth from './Bluetooth';
+
 
 const Settings = ({ onBack, userData }) => {
   const [showAccount, setShowAccount] = useState(false);
   const [showSupport, setShowSupport] = useState(false);
+  const [showBluetooth, setShowBluetooth] = useState(false);
 
   if (showAccount) {
     return <Account onBack={() => setShowAccount(false)} userData={userData} />;
@@ -13,6 +16,10 @@ const Settings = ({ onBack, userData }) => {
 
   if (showSupport) {
     return <Support onBack={() => setShowSupport(false)} />;
+  }
+
+  if (showBluetooth) {
+    return <Bluetooth onBack={() => setShowBluetooth(false)} />;
   }
 
   return (
@@ -29,6 +36,7 @@ const Settings = ({ onBack, userData }) => {
           <li>Notifications</li>
           <li>My BikeGuard</li>
           <li onClick={() => setShowSupport(true)}>Support</li>
+          <li onClick={() => setShowBluetooth(true)}>Connect My Device</li>
         </ul>
       </div>
     </div>
