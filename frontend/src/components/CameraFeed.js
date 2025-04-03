@@ -11,7 +11,7 @@ const CameraFeed = () => {
       try {
         if (imgRef.current) {
           // Set the src directly to the stream URL
-          imgRef.current.src = 'http://128.197.180.238:5000/api/video-feed';
+          imgRef.current.src = 'http://128.197.180.214:5001/api/video-feed';
           
           // Add error event listener to detect loading failures
           imgRef.current.onerror = () => {

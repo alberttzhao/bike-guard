@@ -171,7 +171,7 @@ function App() {
     if (!isLoggedIn || !isOnline) return;
     
     // Get your Raspberry Pi's IP address from the environment or configure it
-    const backendUrl = 'http://128.197.180.238';
+    const backendUrl = 'http://128.197.180.214';
     
     console.log('Connecting to Socket.io server at:', backendUrl);
     
@@ -245,7 +245,7 @@ function App() {
     
     try {
       // Get your Raspberry Pi's IP address
-      const backendUrl = 'http://128.197.180.238';
+      const backendUrl = 'http://128.197.180.214';
       
       // Use Socket.IO if connected
       if (socket && socket.connected) {
@@ -299,7 +299,7 @@ function App() {
     
     try {
       // Get your Raspberry Pi's IP address
-      const backendUrl = 'http://128.197.180.238';
+      const backendUrl = 'http://128.197.180.214';
       
       // Use Socket.IO if connected
       if (socket && socket.connected) {
