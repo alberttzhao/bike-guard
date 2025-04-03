@@ -27,7 +27,7 @@ import threading
 
 
 # Replace with your laptop's IP address where Flask is running
-BACKEND_URL = "http://128.197.180.200:5001"
+BACKEND_URL = "http://128.197.180.214:5001"
 
 # Define the MPU-6050 I2C address and registers
 MPU6050_ADDRESS = 0x68
