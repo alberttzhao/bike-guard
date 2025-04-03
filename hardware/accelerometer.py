@@ -72,7 +72,7 @@ def video_feed():
 
 @app.route('/')
 def index():
-    return '<h1>Raspberry Pi Camera Stream</h1><img src="/video_feed" width="640" height="480">'
+    return '<h1>Raspberry Pi Camera Stream</h1><img src="/api/video-feed" width="640" height="480">'
 
 
 
