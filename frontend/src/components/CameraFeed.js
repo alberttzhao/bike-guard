@@ -1,5 +1,6 @@
 import React, { useRef, useEffect, useState } from 'react';
 import './Components.css';
+import { CONFIG } from './config';  // Adjust the path as needed
 
 const CameraFeed = () => {
   const imgRef = useRef(null);
@@ -11,8 +12,9 @@ const CameraFeed = () => {
       try {
         if (imgRef.current) {
           // Set the src directly to the stream URL
-          imgRef.current.src = 'http://128.197.180.214:5001/api/video-feed';
-          
+          //imgRef.current.src = 'http://128.197.180.214:5001/api/video-feed';
+          imgRef.current.src = `${CONFIG.backendUrl}${CONFIG.apiEndpoints.videoFeed}`;
+
           // Add error event listener to detect loading failures
           imgRef.current.onerror = () => {
             setConnectionError(true);
