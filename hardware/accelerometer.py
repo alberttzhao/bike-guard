@@ -46,7 +46,7 @@ picam2 = Picamera2()
 picam2.configure(picam2.create_video_configuration(main={"size": (640, 480)}))
 picam2.start()
 
-buzzer_pin = 17  # Adjust to the GPIO pin you're using
+buzzer_pin = 17 
 GPIO.setmode(GPIO.BCM)
 GPIO.setup(buzzer_pin, GPIO.OUT)
 
