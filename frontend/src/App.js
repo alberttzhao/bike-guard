@@ -11,6 +11,7 @@ import { onAuthStateChanged, signOut } from 'firebase/auth';
 import { auth, db } from './firebase';
 import { doc, setDoc, collection, addDoc, serverTimestamp } from 'firebase/firestore';
 import { jwtDecode } from 'jwt-decode';
+import { CONFIG } from './config';
 
 function App() {
   const [isLoggedIn, setIsLoggedIn] = useState(false);
@@ -171,7 +172,7 @@ function App() {
     if (!isLoggedIn || !isOnline) return;
     
     // Get your Raspberry Pi's IP address from the environment or configure it
-    const backendUrl = 'http://128.197.180.214';
+    const backendUrl = CONFIG.backendUrl;
     
     console.log('Connecting to Socket.io server at:', backendUrl);
     
@@ -213,7 +214,7 @@ function App() {
     setSocket(newSocket);
     
     // Fetch initial notifications when logged in
-    fetch(`${backendUrl}/api/notifications`)
+    fetch(`${backendUrl}${CONFIG.apiEndpoints.notifications}`)
       .then(response => response.json())
       .then(data => {
         console.log('Fetched notifications:', data);
@@ -245,7 +246,7 @@ function App() {
     
     try {
       // Get your Raspberry Pi's IP address
-      const backendUrl = 'http://128.197.180.214';
+      const backendUrl = CONFIG.backendUrl;;
       
       // Use Socket.IO if connected
       if (socket && socket.connected) {
@@ -265,7 +266,7 @@ function App() {
       
       // Fallback to REST API
       console.log('Triggering alarm via REST API');
-      const response = await fetch(`${backendUrl}/api/trigger-alarm`, {
+      const response = await fetch(`${backendUrl}${CONFIG.apiEndpoints.triggerAlarm}`, {
         method: 'POST',
       });
 
@@ -299,7 +300,7 @@ function App() {
     
     try {
       // Get your Raspberry Pi's IP address
-      const backendUrl = 'http://128.197.180.214';
+      const backendUrl = CONFIG.backendUrl;
       
       // Use Socket.IO if connected
       if (socket && socket.connected) {
@@ -319,7 +320,7 @@ function App() {
       
       // Fallback to REST API
       console.log('Stopping alarm via REST API');
-      const response = await fetch(`${backendUrl}/api/stop-alarm`, {
+      const response = await fetch(`${backendUrl}${CONFIG.apiEndpoints.stopAlarm}`, {
         method: 'POST',
       });
       

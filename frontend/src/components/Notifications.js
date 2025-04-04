@@ -1,5 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import './Components.css';
+import { CONFIG } from '../config';
+
 
 function Notifications({ notificationData }) {
   const [notifications, setNotifications] = useState([]);
@@ -8,7 +10,7 @@ function Notifications({ notificationData }) {
   useEffect(() => {
     const fetchNotifications = async () => {
       try {
-        const response = await fetch('http://128.197.180.238:5000/api/notifications');
+        const response = await fetch(`${CONFIG.backendUrl}${CONFIG.apiEndpoints.notifications}`);
         const data = await response.json();
         setNotifications(data);
       } catch (error) {
