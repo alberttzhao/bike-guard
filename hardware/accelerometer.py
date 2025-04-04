@@ -9,7 +9,6 @@ import gpiozero
 from gpiozero import Buzzer
 from time import sleep
 import RPi.GPIO as GPIO
-import time
 
 #adding some stuff for csv file 
 import subprocess
@@ -21,7 +20,6 @@ from picamera2 import Picamera2
 from io import BytesIO
 from PIL import Image
 
-from flask_socketio import SocketIO, emit
 
 # threading
 import threading
@@ -41,7 +39,6 @@ GYRO_YOUT_H = 0x45
 GYRO_ZOUT_H = 0x47
 
 app = Flask(__name__)
-socketio = SocketIO(app)
 
 # Initialize Picamera2
 picam2 = Picamera2()
@@ -167,7 +164,7 @@ def calculate_pitch_roll(accel):
 		if pitch > 5 or roll > 10:
 			print("Movement detected!")
 			control_buzzer(GPIO.HIGH)  # Turn buzzer on
-			time.sleep(1)  # Buzzer on for 1 second
+			time.sleep(30)  # Buzzer on for 1 second
 			control_buzzer(GPIO.LOW)  # Turn buzzer off
 			time.sleep(1)  # Buzzer off for 1 second
 			send_notification("Your bike is moving too much!")
