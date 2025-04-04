@@ -79,6 +79,14 @@ def video_feed():
 def index():
     return '<h1>Raspberry Pi Camera Stream</h1><img src="/api/video-feed" width="640" height="480">'
 
+@app.route('/api/trigger-alarm', methods=['POST'])
+def trigger_alarm():
+    print("Alarm trigger request received.")
+    control_buzzer(GPIO.HIGH)
+    time.sleep(1)
+    control_buzzer(GPIO.LOW)
+    return {"status": "Alarm triggered"}, 200
+
 
 
 # Initialize MPU-6050
