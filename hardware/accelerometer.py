@@ -22,6 +22,9 @@ import time
 from io import BytesIO
 from PIL import Image
 
+# use this for buzzer to and from webUI
+import socketio
+
 # threading
 import threading
 
@@ -45,6 +48,8 @@ app = Flask(__name__)
 picam2 = Picamera2()
 picam2.configure(picam2.create_video_configuration(main={"size": (640, 480)}))
 picam2.start()
+
+pi_sio = socketio.Client()
 
 buzzer_pin = 17 
 GPIO.setmode(GPIO.BCM)
@@ -195,6 +200,30 @@ def camera_thread():
 	app.run(host="0.0.0.0", port=5001, debug=False, threaded=True)
 
 
+def raspberry_pi_listener():
+    """ Function to connect Raspberry Pi as a listener. """
+    try:
+        print("Connecting to Flask server...")
+        pi_sio.connect(BACKEND_URL)
+
+        @pi_sio.on("bike_data")  # Listening for bike data updates
+        def on_bike_data(data):
+            print(f"Received bike data: {data}")
+
+            if data.get("is_alarm_active"):
+                print("Alarm triggered! Activating buzzer.")
+                control_buzzer(GPIO.HIGH)  # Turn buzzer on
+                time.sleep(2)  # Buzzer on for 2 seconds
+                control_buzzer(GPIO.LOW)  # Turn buzzer off
+            else:
+                print("Alarm stopped.")
+
+        pi_sio.wait()  # Keep listening for events
+    except Exception as e:
+        print(f"Error in Raspberry Pi listener: {e}")
+
+
+
 if __name__ =="__main__":
 
 	# Initialize the I2C bus
@@ -216,9 +245,11 @@ if __name__ =="__main__":
 
 	t1 = threading.Thread(target=accel_thread)
 	t2 = threading.Thread(target=camera_thread)
+	t3 = threading.Thread(target=raspberry_pi_listener, daemon=True)
 
 	t1.start()
 	t2.start()
+	t3.start()
 
 	t1.join()
 	t2.join()
