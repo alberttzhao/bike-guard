@@ -83,7 +83,7 @@ def trigger_alarm():
     return {"status": "Alarm triggered"}, 200
 
 @app.route('/api/stop-alarm', methods=['POST'])
-def trigger_alarm():
+def stop_alarm():
     print("Alarm stop request received.")
     control_buzzer(GPIO.LOW)
     return {"status": "Alarm stopped"}, 200
