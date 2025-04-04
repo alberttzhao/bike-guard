@@ -1,6 +1,6 @@
 import React, { useRef, useEffect, useState } from 'react';
 import './Components.css';
-import { CONFIG } from './config';  // Adjust the path as needed
+import { CONFIG } from '../config';  // Adjust the path as needed
 
 const CameraFeed = () => {
   const imgRef = useRef(null);
