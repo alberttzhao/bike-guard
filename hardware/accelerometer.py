@@ -80,9 +80,13 @@ def index():
 def trigger_alarm():
     print("Alarm trigger request received.")
     control_buzzer(GPIO.HIGH)
-    time.sleep(1)
-    control_buzzer(GPIO.LOW)
     return {"status": "Alarm triggered"}, 200
+
+@app.route('/api/stop-alarm', methods=['POST'])
+def trigger_alarm():
+    print("Alarm stop request received.")
+    control_buzzer(GPIO.LOW)
+    return {"status": "Alarm stopped"}, 200
 
 @socketio.on('trigger_buzzer')
 def handle_buzzer_trigger():
