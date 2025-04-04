@@ -88,21 +88,6 @@ def stop_alarm():
     control_buzzer(GPIO.LOW)
     return {"status": "Alarm stopped"}, 200
 
-@socketio.on('trigger_buzzer')
-def handle_buzzer_trigger():
-    print("Triggering buzzer...")
-    control_buzzer(GPIO.HIGH)  
-    socketio.emit('buzzer_status', {'status': 'on'}) 
-    print("Buzzer triggered!")
-    
-@socketio.on('stop_buzzer')
-def handle_buzzer_stop():
-    print("Stopping buzzer...")
-    control_buzzer(GPIO.LOW)  
-    socketio.emit('buzzer_status', {'status': 'off'})  
-    print("Buzzer stopped!")
-
-
 
 
 # Initialize MPU-6050
