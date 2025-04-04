@@ -18,9 +18,10 @@ import csv
 
 from flask import Flask, Response
 from picamera2 import Picamera2
-import time
 from io import BytesIO
 from PIL import Image
+
+from flask_socketio import SocketIO, emit
 
 # use this for buzzer to and from webUI
 import socketio
@@ -43,6 +44,7 @@ GYRO_YOUT_H = 0x45
 GYRO_ZOUT_H = 0x47
 
 app = Flask(__name__)
+socketio = SocketIO(app)
 
 # Initialize Picamera2
 picam2 = Picamera2()
@@ -86,6 +88,21 @@ def trigger_alarm():
     time.sleep(1)
     control_buzzer(GPIO.LOW)
     return {"status": "Alarm triggered"}, 200
+
+@socketio.on('trigger_buzzer')
+def handle_buzzer_trigger():
+    print("Triggering buzzer...")
+    control_buzzer(GPIO.HIGH)  
+    socketio.emit('buzzer_status', {'status': 'on'}) 
+    print("Buzzer triggered!")
+    
+@socketio.on('stop_buzzer')
+def handle_buzzer_stop():
+    print("Stopping buzzer...")
+    control_buzzer(GPIO.LOW)  
+    socketio.emit('buzzer_status', {'status': 'off'})  
+    print("Buzzer stopped!")
+
 
 
 
@@ -208,29 +225,6 @@ def camera_thread():
 	app.run(host="0.0.0.0", port=5001, debug=False, threaded=True)
 
 
-def raspberry_pi_listener():
-    """ Function to connect Raspberry Pi as a listener. """
-    try:
-        print("Connecting to Flask server...")
-        pi_sio.connect(BACKEND_URL)
-
-        @pi_sio.on("bike_data")  # Listening for bike data updates
-        def on_bike_data(data):
-            print(f"Received bike data: {data}")
-
-            if data.get("is_alarm_active"):
-                print("Alarm triggered! Activating buzzer.")
-                control_buzzer(GPIO.HIGH)  # Turn buzzer on
-                time.sleep(2)  # Buzzer on for 2 seconds
-                control_buzzer(GPIO.LOW)  # Turn buzzer off
-            else:
-                print("Alarm stopped.")
-
-        pi_sio.wait()  # Keep listening for events
-    except Exception as e:
-        print(f"Error in Raspberry Pi listener: {e}")
-
-
 
 if __name__ =="__main__":
 
@@ -253,12 +247,9 @@ if __name__ =="__main__":
 
 	t1 = threading.Thread(target=accel_thread)
 	t2 = threading.Thread(target=camera_thread)
-	t3 = threading.Thread(target=raspberry_pi_listener, daemon=True)
 
 	t1.start()
 	t2.start()
-	t3.start()
 
 	t1.join()
 	t2.join()
-	t3.join()
