@@ -81,6 +81,33 @@ function App() {
       return false;
     }
   };
+
+  // In your App.js or wherever you're sending notifications
+  // function to include user_id when sending POST requests for notifications
+  const sendNotification = async (message, type) => {
+    try {
+      const userId = userData?.uid;
+      const response = await fetch(
+        `${CONFIG.backendUrl}${CONFIG.apiEndpoints.notifications}?user_id=${userId}`,
+        {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json'
+          },
+          body: JSON.stringify({
+            message: message,
+            type: type || 'info'
+          })
+        }
+      );
+      
+      if (response.ok) {
+        console.log('Notification sent successfully');
+      }
+    } catch (error) {
+      console.error('Error sending notification:', error);
+    }
+  };
   
   // Handle online/offline status
   useEffect(() => {
@@ -573,7 +600,7 @@ function App() {
                     </button>
                   </div>
                   
-                  <Notifications notificationData={notifications} />
+                  <Notifications notificationData={notifications} userData={userData} />
                 </>
               ) : (
                 <Settings 

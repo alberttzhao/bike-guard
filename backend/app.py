@@ -9,12 +9,25 @@ import threading
 import time
 import random
 import socketio
+import firebase_admin
+from firebase_admin import credentials, firestore
 
+# Initialize Firebase with your service account credentials
+# You'll need to create a serviceAccountKey.json from your Firebase console
+try:
+    cred = credentials.Certificate('../backend/bike-guard-2025-firebase-adminsdk-fbsvc-6f53d1a6af.json')  # Adjust path as needed
+    firebase_admin.initialize_app(cred)
+    db = firestore.client()
+    firebase_enabled = True
+    print("Firebase initialized successfully")
+except Exception as e:
+    firebase_enabled = False
+    print(f"Firebase initialization failed: {e}")
+    print("Continuing without Firebase integration")
 
 app = Flask(__name__)
 CORS(app)
 socketio = SocketIO(app, cors_allowed_origins="*", async_mode='threading')
-
 
 def get_ip():
     hostname = socket.gethostname()
@@ -96,41 +109,72 @@ def load_bike_data():
         }
     conn.close()
 
-# Notifications endpoints
-@app.route('/api/notifications', methods=['POST'])
-def create_notification():
-    data = request.json
-    print(f"Received notification: {data}")  # Debug print
-    conn = sqlite3.connect('database.db')
-    c = conn.cursor()
+# Add a function to store notifications in Firebase
+def store_notification_in_firebase(notification_data):
+    if not firebase_enabled:
+        print("Firebase not enabled, skipping Firestore update")
+        return False
     
     try:
-        c.execute('''
-            INSERT INTO notifications (message, type)
-            VALUES (?, ?)
-        ''', (data['message'], data.get('type', 'movement')))
-        conn.commit()
-        notification_id = c.lastrowid
+        # Get all users from Firebase to send them the notification
+        users_ref = db.collection('users')
+        users = users_ref.stream()
         
-        notification_data = {
-            'id': notification_id,
-            'message': data['message'],
-            'type': data.get('type', 'movement'),
-            'timestamp': datetime.now().isoformat()
+        # Format notification data for Firestore
+        firebase_notification = {
+            'message': notification_data['message'],
+            'type': notification_data['type'],
+            'timestamp': firestore.SERVER_TIMESTAMP,
+            'read': False
         }
         
-        # Emit notification via Socket.IO
-        socketio.emit('new_notification', notification_data)
+        # Add the notification to each user's collection
+        for user in users:
+            user_id = user.id
+            db.collection('users').document(user_id).collection('notifications').add(firebase_notification)
+            print(f"Notification added to user {user_id}")
         
-        return jsonify(notification_data), 201
+        return True
     except Exception as e:
-        print(f"Error creating notification: {e}")  # Debug print
-        return jsonify({'error': str(e)}), 500
-    finally:
-        conn.close()
+        print(f"Error storing notification in Firebase: {e}")
+        return False
 
+# Notifications endpoints
 @app.route('/api/notifications', methods=['GET'])
 def get_notifications():
+    # Get user_id from request parameter if provided
+    user_id = request.args.get('user_id')
+    print(f"GET /api/notifications - User ID: {user_id}")
+    
+    # If user_id is provided and Firebase is enabled, get notifications from Firebase
+    if user_id and firebase_enabled:
+        try:
+            print(f"Attempting to fetch notifications from Firebase for user {user_id}")
+            # Get user's notifications from Firebase
+            notifications_ref = db.collection('users').document(user_id).collection('notifications')
+            notifications_query = notifications_ref.order_by('timestamp', direction=firestore.Query.DESCENDING).limit(50)
+            notifications_docs = notifications_query.stream()
+            
+            # Convert to list of dictionaries
+            notifications = []
+            for doc in notifications_docs:
+                notification = doc.to_dict()
+                notification['id'] = doc.id
+                # Convert timestamp to ISO format string if it exists
+                if 'timestamp' in notification and notification['timestamp']:
+                    notification['timestamp'] = notification['timestamp'].isoformat() \
+                        if hasattr(notification['timestamp'], 'isoformat') \
+                        else str(notification['timestamp'])
+                notifications.append(notification)
+            
+            print(f"Retrieved {len(notifications)} notifications from Firebase")
+            return jsonify(notifications)
+        except Exception as e:
+            print(f"Error getting notifications from Firebase: {e}")
+            # Fall back to SQLite
+            print("Falling back to SQLite database")
+    
+    # Fall back to SQLite database
     conn = sqlite3.connect('database.db')
     c = conn.cursor()
     
@@ -143,16 +187,20 @@ def get_notifications():
             'timestamp': row[3]
         } for row in c.fetchall()]
         
+        print(f"Retrieved {len(notifications)} notifications from SQLite")
         return jsonify(notifications)
     except Exception as e:
+        print(f"Error getting notifications from SQLite: {e}")
         return jsonify({'error': str(e)}), 500
     finally:
         conn.close()
         
 @app.route('/api/video-feed')
 def video_feed():
-    # Return the video stream response
-    return Response(generate_frames(), mimetype='multipart/x-mixed-replace; boundary=frame')
+    # This function seems to be missing implementation
+    # You would need to implement generate_frames()
+    # For now, return a placeholder response
+    return Response("Video feed not implemented", mimetype='text/plain')
 
 # Location tracking endpoints
 @app.route('/api/bike-location', methods=['GET'])
@@ -195,6 +243,33 @@ def update_location():
             
             conn.commit()
             
+            # Update location in Firebase for all users
+            if firebase_enabled:
+                try:
+                    # Get all users
+                    users_ref = db.collection('users')
+                    users = users_ref.stream()
+                    
+                    # Update bikeData for each user
+                    for user in users:
+                        user_id = user.id
+                        db.collection('users').document(user_id).update({
+                            'bikeData.currentLocation': {
+                                'lat': lat,
+                                'lng': lng
+                            },
+                            'bikeData.lastUpdated': firestore.SERVER_TIMESTAMP
+                        })
+                        
+                        # Add to location history
+                        db.collection('users').document(user_id).collection('locationHistory').add({
+                            'lat': lat,
+                            'lng': lng,
+                            'timestamp': firestore.SERVER_TIMESTAMP
+                        })
+                except Exception as e:
+                    print(f"Error updating location in Firebase: {e}")
+            
             # Emit update via Socket.IO
             socketio.emit('bike_data', bike_data)
             
@@ -230,9 +305,21 @@ def trigger_alarm():
             VALUES (?, ?)
         ''', ("Alarm triggered", "alarm"))
         conn.commit()
+        notification_id = c.lastrowid
+        
+        notification_data = {
+            'id': notification_id,
+            'message': "Alarm triggered",
+            'type': "alarm",
+            'timestamp': datetime.now().isoformat()
+        }
+        
+        # Store in Firebase
+        store_notification_in_firebase(notification_data)
         
         # Emit update via Socket.IO
         socketio.emit('bike_data', bike_data)
+        socketio.emit('new_notification', notification_data)
         
         return jsonify({"success": True, "message": "Alarm triggered"})
     except Exception as e:
@@ -263,9 +350,21 @@ def stop_alarm():
             VALUES (?, ?)
         ''', ("Alarm stopped", "info"))
         conn.commit()
+        notification_id = c.lastrowid
+        
+        notification_data = {
+            'id': notification_id,
+            'message': "Alarm stopped",
+            'type': "info",
+            'timestamp': datetime.now().isoformat()
+        }
+        
+        # Store in Firebase
+        store_notification_in_firebase(notification_data)
         
         # Emit update via Socket.IO
         socketio.emit('bike_data', bike_data)
+        socketio.emit('new_notification', notification_data)
         
         return jsonify({"success": True, "message": "Alarm stopped"})
     except Exception as e:
@@ -320,6 +419,33 @@ def simulate_movement():
             bike_data["location"]["lat"] = new_lat
             bike_data["location"]["lng"] = new_lng
             bike_data["last_updated"] = datetime.now().isoformat()
+            
+            # Update Firebase for all users
+            if firebase_enabled:
+                try:
+                    # Get all users
+                    users_ref = db.collection('users')
+                    users = users_ref.stream()
+                    
+                    # Update bikeData for each user
+                    for user in users:
+                        user_id = user.id
+                        db.collection('users').document(user_id).update({
+                            'bikeData.currentLocation': {
+                                'lat': new_lat,
+                                'lng': new_lng
+                            },
+                            'bikeData.lastUpdated': firestore.SERVER_TIMESTAMP
+                        })
+                        
+                        # Add to location history
+                        db.collection('users').document(user_id).collection('locationHistory').add({
+                            'lat': new_lat,
+                            'lng': new_lng,
+                            'timestamp': firestore.SERVER_TIMESTAMP
+                        })
+                except Exception as e:
+                    print(f"Error updating location in Firebase during simulation: {e}")
             
             # Emit update via Socket.IO
             socketio.emit('bike_data', bike_data)
