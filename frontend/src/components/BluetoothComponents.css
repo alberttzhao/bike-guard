@@ -1,0 +1,272 @@
+/* BluetoothComponents.css */
+
+/* Bluetooth Status Icon Styles */
+.bluetooth-status {
+    background: none;
+    border: none;
+    padding: 8px;
+    cursor: pointer;
+    color: #6c757d; /* Grey when disconnected */
+    font-size: 16px;
+    transition: color 0.2s ease-in-out;
+  }
+  
+  .bluetooth-status:hover {
+    color: #1a508b;
+  }
+  
+  .bluetooth-status.connected {
+    color: #28a745; /* Green when connected */
+  }
+  
+  .bluetooth-status .material-icons {
+    font-size: 24px;
+  }
+  
+  /* Bluetooth Setup Page Styles */
+  .bluetooth-setup-page {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    position: relative;
+    padding: 20px;
+    font-family: 'Inter', sans-serif;
+  }
+  
+  .bluetooth-setup-container {
+    max-width: 600px;
+    width: 100%;
+    background: white;
+    border-radius: 12px;
+    padding: 24px;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+    margin-top: 50px;
+    border: 1px solid rgba(0, 0, 0, 0.08);
+  }
+  
+  .bluetooth-title {
+    font-size: 22px;
+    font-weight: 600;
+    text-align: center;
+    margin-bottom: 24px;
+    color: #1a508b;
+    letter-spacing: 0.3px;
+  }
+  
+  .bluetooth-status-section {
+    background-color: #f8f9fa;
+    border-radius: 8px;
+    padding: 16px;
+    margin-bottom: 24px;
+  }
+  
+  .bluetooth-status-section h3 {
+    font-size: 16px;
+    margin-top: 0;
+    margin-bottom: 10px;
+    color: #2c3e50;
+  }
+  
+  .bluetooth-status-indicator {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+  }
+  
+  .status-dot {
+    width: 12px;
+    height: 12px;
+    border-radius: 50%;
+    background-color: #dc3545; /* Red for disconnected */
+  }
+  
+  .status-dot.connected {
+    background-color: #28a745; /* Green for connected */
+  }
+  
+  .status-text {
+    font-size: 16px;
+    color: #2c3e50;
+  }
+  
+  .bluetooth-error {
+    background-color: rgba(220, 53, 69, 0.1);
+    color: #dc3545;
+    padding: 12px;
+    border-radius: 8px;
+    margin-bottom: 20px;
+    font-size: 14px;
+  }
+  
+  .scan-section {
+    display: flex;
+    justify-content: center;
+    margin-bottom: 24px;
+  }
+  
+  .scan-button {
+    background: #1a508b;
+    color: white;
+    border: none;
+    padding: 12px 24px;
+    font-size: 16px;
+    font-weight: 500;
+    border-radius: 8px;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    box-shadow: 0 2px 6px rgba(26, 80, 139, 0.25);
+  }
+  
+  .scan-button:hover {
+    background: #164579;
+    transform: translateY(-2px);
+  }
+  
+  .scan-button:active {
+    background: #123c68;
+    transform: translateY(0);
+  }
+  
+  .scan-button:disabled {
+    background: #6c757d;
+    cursor: not-allowed;
+    transform: none;
+  }
+  
+  .devices-list-section {
+    margin-bottom: 24px;
+  }
+  
+  .devices-list-section h3 {
+    font-size: 16px;
+    margin-bottom: 12px;
+    color: #2c3e50;
+  }
+  
+  .devices-list {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+  }
+  
+  .device-item {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 14px;
+    background: #f8f9fa;
+    border-radius: 8px;
+    margin-bottom: 10px;
+  }
+  
+  .device-name {
+    font-size: 16px;
+    font-weight: 500;
+    margin-bottom: 4px;
+    color: #2c3e50;
+  }
+  
+  .device-id {
+    font-size: 12px;
+    color: #6c757d;
+    margin-bottom: 4px;
+  }
+  
+  .device-rssi {
+    font-size: 12px;
+    color: #6c757d;
+  }
+  
+  .connect-button {
+    background: #1a508b;
+    color: white;
+    border: none;
+    padding: 8px 16px;
+    font-size: 14px;
+    border-radius: 6px;
+    cursor: pointer;
+    transition: all 0.3s ease;
+  }
+  
+  .connect-button:hover {
+    background: #164579;
+  }
+  
+  .connect-button:disabled {
+    background: #6c757d;
+    cursor: not-allowed;
+  }
+  
+  .connected-device-section {
+    background-color: #f8f9fa;
+    border-radius: 8px;
+    padding: 16px;
+    margin-bottom: 24px;
+  }
+  
+  .connected-device-section h3 {
+    font-size: 16px;
+    margin-top: 0;
+    margin-bottom: 12px;
+    color: #2c3e50;
+  }
+  
+  .device-info {
+    margin-bottom: 16px;
+  }
+  
+  .device-info p {
+    margin: 8px 0;
+    font-size: 14px;
+    color: #2c3e50;
+  }
+  
+  .disconnect-button {
+    background: #dc3545;
+    color: white;
+    border: none;
+    padding: 10px 20px;
+    font-size: 14px;
+    border-radius: 6px;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    width: 100%;
+  }
+  
+  .disconnect-button:hover {
+    background: #c82333;
+  }
+  
+  .bluetooth-help-section {
+    border-top: 1px solid rgba(0, 0, 0, 0.08);
+    padding-top: 20px;
+  }
+  
+  .bluetooth-help-section h3 {
+    font-size: 16px;
+    margin-bottom: 12px;
+    color: #2c3e50;
+  }
+  
+  .help-list {
+    padding-left: 16px;
+    margin: 0;
+  }
+  
+  .help-list li {
+    margin-bottom: 8px;
+    font-size: 14px;
+    color: #6c757d;
+  }
+  
+  @media (max-width: 600px) {
+    .device-item {
+      flex-direction: column;
+      align-items: stretch;
+      gap: 12px;
+    }
+    
+    .connect-button {
+      width: 100%;
+    }
+  }

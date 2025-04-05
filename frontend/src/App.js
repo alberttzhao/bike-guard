@@ -5,6 +5,7 @@ import CameraFeed from './components/CameraFeed';
 import Settings from './components/Settings';
 import LiveMap from './components/LiveMap';
 import AuthForm from './components/AuthForm';
+import { BluetoothStatus } from './components/BluetoothComponents';
 import { GoogleOAuthProvider } from '@react-oauth/google';
 import { io } from 'socket.io-client';
 import { onAuthStateChanged, signOut } from 'firebase/auth';
@@ -21,6 +22,8 @@ function App() {
   const [notifications, setNotifications] = useState([]);
   const [isOnline, setIsOnline] = useState(navigator.onLine);
   const [userData, setUserData] = useState(null);
+  const [isBluetoothConnected, setIsBluetoothConnected] = useState(false);
+
   
   // Bike data from the backend
   const [bikeData, setBikeData] = useState({
@@ -166,6 +169,27 @@ function App() {
 
     return () => unsubscribe();
   }, []);
+
+  // Check for Bluetooth connection in localStorage
+  useEffect(() => {
+    // Check for saved Bluetooth connection in localStorage
+    const savedDevice = localStorage.getItem('bikeGuardBluetoothDevice');
+    if (savedDevice) {
+      try {
+        // Set connected state if we have a saved device
+        setIsBluetoothConnected(true);
+      } catch (e) {
+        console.error('Error parsing saved Bluetooth device:', e);
+      }
+    }
+  }, []);
+
+  // function to handle Bluetooth icon click
+  const handleBluetoothClick = () => {
+    setCurrentPage('settings');
+    // Store a flag to open the Bluetooth setup page directly
+    sessionStorage.setItem('openBluetoothSetup', 'true');
+  };
   
   // Connect to backend Socket.io when logged in
   useEffect(() => {
@@ -406,13 +430,21 @@ function App() {
   
   // Toggle tracking
   const handleTrackingToggle = () => {
+    const newTrackingState = !isTracking;
     setIsTracking(!isTracking);
+
+    // Optionally stop any active location updates if tracking is turned off
+    if (!newTrackingState && socket && socket.connected) {
+      socket.emit('stop_tracking');
+    } else if (newTrackingState && socket && socket.connected) {
+      socket.emit('start_tracking');
+    }
     
     // Save user preference to Firestore
     if (userData?.uid) {
       setDoc(doc(db, 'users', userData.uid), {
         settings: {
-          trackingEnabled: !isTracking,
+          trackingEnabled: newTrackingState,
           lastUpdated: serverTimestamp()
         }
       }, { merge: true }).catch(error => {
@@ -484,6 +516,10 @@ function App() {
             <header className="app-header">
               <h1>BikeGuard {userData?.firstName ? `| ${userData.firstName}` : (userData?.name ? `| ${userData.name.split(' ')[0]}` : '')}</h1>
               <div className="header-controls">
+                <BluetoothStatus 
+                  isConnected={isBluetoothConnected} 
+                  onClick={handleBluetoothClick}
+                />
                 <button className="settings-btn" onClick={() => setCurrentPage('settings')}>
                   <span className="material-icons">settings</span>
                 </button>
@@ -533,7 +569,7 @@ function App() {
                       <span className="material-icons">
                         {isTracking ? 'location_on' : 'location_off'}
                       </span>
-                      {isTracking ? 'Tracking On' : 'Tracking Off'}
+                      {isTracking ? 'Tracking On' : 'Location Off'}
                     </button>
                   </div>
                   
