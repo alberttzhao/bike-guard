@@ -1,20 +1,21 @@
 import RPi.GPIO as GPIO
 import time
+import os
 
-SWITCH_GPIO = 27  # Change this to the GPIO pin you're using
+SWITCH_GPIO = 17  # Change this to your GPIO pin
 
 GPIO.setmode(GPIO.BCM)
 GPIO.setup(SWITCH_GPIO, GPIO.IN, pull_up_down=GPIO.PUD_UP)
 
-print("Monitoring switch... (Press Ctrl+C to stop)")
+def shutdown(channel):
+    print("Shutting down...")
+    os.system("sudo shutdown -h now")
+
+# Detect falling edge (switch closed)
+GPIO.add_event_detect(SWITCH_GPIO, GPIO.FALLING, callback=shutdown, bouncetime=2000)
+
 try:
     while True:
-        input_state = GPIO.input(SWITCH_GPIO)
-        if input_state == False:
-            print("Switch CLOSED (pressed or toggled ON)")
-        else:
-            print("Switch OPEN")
-        time.sleep(0.5)
+        time.sleep(1)
 except KeyboardInterrupt:
     GPIO.cleanup()
-    print("\nStopped and cleaned up.")
