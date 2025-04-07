@@ -6,6 +6,8 @@ const LiveMap = ({ bikeLocation, isTracking }) => {
   const [mapStatus, setMapStatus] = useState('loading');
   const [googleMapInstance, setGoogleMapInstance] = useState(null);
   const [marker, setMarker] = useState(null);
+  // const [showOverlay, setShowOverlay] = useState(!isTracking);
+
   
   // Default location if none provided
   const defaultLocation = { lat: 37.7749, lng: -122.4194 }; // San Francisco
@@ -112,6 +114,11 @@ const LiveMap = ({ bikeLocation, isTracking }) => {
       googleMapInstance.panTo(bikeLocation);
     }
   }, [bikeLocation, isTracking, marker, googleMapInstance]);
+
+  // Update overlay when tracking state changes
+  // useEffect(() => {
+  //   setShowOverlay(!isTracking);
+  // }, [isTracking]);
   
   return (
     <div className="map-container">
@@ -119,13 +126,13 @@ const LiveMap = ({ bikeLocation, isTracking }) => {
         <h3>Live Location</h3>
         {mapStatus === 'loaded' && bikeLocation ? (
           <div className="location-info">
-            <span className="location-dot"></span>
-            <span>Live Tracking Active</span>
+            <span className={`location-dot ${!isTracking ? 'inactive' : ''}`}></span>
+            <span>{isTracking ? 'Live Tracking Active' : 'Live Tracking Inactive'}</span>
           </div>
         ) : (
           <div className="location-info">
             {mapStatus === 'loading' ? 'Loading map...' : 
-             mapStatus === 'error' ? 'Error loading map' : 'Waiting for location...'}
+            mapStatus === 'error' ? 'Error loading map' : 'Waiting for location...'}
           </div>
         )}
       </div>
@@ -147,6 +154,13 @@ const LiveMap = ({ bikeLocation, isTracking }) => {
             ) : (
               <p>Error loading Google Maps</p>
             )}
+          </div>
+        )}
+        {/* Add the location tracking overlay here */}
+        {!isTracking && (
+          <div className="location-tracking-overlay">
+            <span className="material-icons">location_off</span>
+            <p>Location Tracking Off</p>
           </div>
         )}
       </div>

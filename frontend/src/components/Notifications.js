@@ -3,15 +3,36 @@ import './Components.css';
 import { CONFIG } from '../config';
 
 
-function Notifications({ notificationData }) {
+function Notifications({ notificationData, userData }) {
   const [notifications, setNotifications] = useState([]);
 
   // Fetch notifications from REST API on component mount
   useEffect(() => {
     const fetchNotifications = async () => {
+      
+      // newly added for notifications
+      const userId = userData?.uid || JSON.parse(localStorage.getItem('bikeGuardUserData'))?.uid;
+    
+      let url = `${CONFIG.backendUrl}${CONFIG.apiEndpoints.notifications}`;
+      if (userId) {
+        url += `?user_id=${userId}`;
+      }
+
       try {
-        const response = await fetch(`${CONFIG.backendUrl}${CONFIG.apiEndpoints.notifications}`);
+        const userId = userData?.uid || JSON.parse(localStorage.getItem('bikeGuardUserData'))?.uid;
+  
+        let url = `${CONFIG.backendUrl}${CONFIG.apiEndpoints.notifications}`;
+        if (userId) {
+          url += `?user_id=${userId}`;
+        }
+      
+        console.log('Fetching notifications from URL:', url);
+        console.log('User ID:', userId);
+
+        // Use the url variable with the user_id parameter instead of the hardcoded URL
+        const response = await fetch(url);
         const data = await response.json();
+        console.log('Notifications response:', data);
         setNotifications(data);
       } catch (error) {
         console.error('Error fetching notifications:', error);
@@ -27,7 +48,7 @@ function Notifications({ notificationData }) {
     return () => {
       if (interval) clearInterval(interval);
     };
-  }, [notificationData]);
+  }, [notificationData, userData]);
 
   // Update notifications when socket data is received
   useEffect(() => {
