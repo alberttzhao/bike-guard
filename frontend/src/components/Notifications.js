@@ -9,30 +9,22 @@ function Notifications({ notificationData, userData }) {
   // Fetch notifications from REST API on component mount
   useEffect(() => {
     const fetchNotifications = async () => {
-      
-      // newly added for notifications
-      const userId = userData?.uid || JSON.parse(localStorage.getItem('bikeGuardUserData'))?.uid;
-    
-      let url = `${CONFIG.backendUrl}${CONFIG.apiEndpoints.notifications}`;
-      if (userId) {
-        url += `?user_id=${userId}`;
-      }
-
       try {
         const userId = userData?.uid || JSON.parse(localStorage.getItem('bikeGuardUserData'))?.uid;
-  
-        let url = `${CONFIG.backendUrl}${CONFIG.apiEndpoints.notifications}`;
-        if (userId) {
-          url += `?user_id=${userId}`;
+        
+        if (!userId) {
+          console.log('No user ID available, skipping notification fetch');
+          setNotifications([]);
+          return;
         }
-      
-        console.log('Fetching notifications from URL:', url);
-        console.log('User ID:', userId);
-
-        // Use the url variable with the user_id parameter instead of the hardcoded URL
+        
+        console.log('Fetching notifications for user:', userId);
+        const url = `${CONFIG.backendUrl}${CONFIG.apiEndpoints.notifications}?user_id=${userId}`;
+        console.log('Fetch URL:', url);
+        
         const response = await fetch(url);
         const data = await response.json();
-        console.log('Notifications response:', data);
+        console.log('Notifications received:', data);
         setNotifications(data);
       } catch (error) {
         console.error('Error fetching notifications:', error);

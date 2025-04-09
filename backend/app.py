@@ -1,6 +1,6 @@
 from flask import Flask, request, jsonify, Response
 from flask_cors import CORS
-from flask_socketio import SocketIO, emit
+from flask_socketio import SocketIO, emit, join_room, leave_room
 from datetime import datetime
 import sqlite3
 import socket
@@ -30,7 +30,7 @@ if ENV == 'production':
 elif ENV == 'raspberry':
     FIREBASE_CREDENTIALS = './raspberry-serviceAccountKey.json'
 else:
-    FIREBASE_CREDENTIALS = './dev-serviceAccountKey.json'
+    FIREBASE_CREDENTIALS = './bike-guard-2025-firebase-adminsdk-fbsvc-6ac8fa5688.json'
 
 # Initialize Firebase with your service account credentials
 # You'll need to create a serviceAccountKey.json from your Firebase console
@@ -130,45 +130,89 @@ def load_bike_data():
     conn.close()
 
 # Add a function to store notifications in Firebase
-def store_notification_in_firebase(notification_data):
-    if not firebase_enabled:
-        print("Firebase not enabled, skipping Firestore update")
-        return False
+@app.route('/api/notifications', methods=['POST'])
+def create_notification():
+    data = request.json
+    print(f"Received notification: {data}")
     
-    try:
-        # Get all users from Firebase to send them the notification
-        users_ref = db.collection('users')
-        users = users_ref.stream()
-        
-        # Format notification data for Firestore
-        firebase_notification = {
-            'message': notification_data['message'],
-            'type': notification_data['type'],
-            'timestamp': firestore.SERVER_TIMESTAMP,
-            'read': False
-        }
-        
-        # Add the notification to each user's collection
-        for user in users:
-            user_id = user.id
-            db.collection('users').document(user_id).collection('notifications').add(firebase_notification)
+    # Get user_id from request if provided
+    user_id = request.args.get('user_id')
+    
+    # Only store in Firebase if user_id is provided
+    if user_id and firebase_enabled:
+        try:
+            # Format notification data for Firestore
+            firebase_notification = {
+                'message': data['message'],
+                'type': data.get('type', 'movement'),
+                'timestamp': firestore.SERVER_TIMESTAMP,
+                'read': False
+            }
+            
+            # Add notification only to the specific user
+            doc_ref = db.collection('users').document(user_id).collection('notifications').add(firebase_notification)
+            notification_id = doc_ref[1].id  # Get the generated ID
+            
+            notification_data = {
+                'id': notification_id,
+                'message': data['message'],
+                'type': data.get('type', 'movement'),
+                'timestamp': datetime.now().isoformat()
+            }
+            
             print(f"Notification added to user {user_id}")
+            
+            # Emit notification via Socket.IO ONLY to this user
+            socketio.emit('new_notification', notification_data, room=user_id)
+            
+            return jsonify(notification_data), 201
+        except Exception as e:
+            print(f"Error storing notification in Firebase: {e}")
+            return jsonify({'error': str(e)}), 500
+    else:
+        # For testing only - should be removed in production
+        # Store in SQLite for backward compatibility during testing
+        conn = sqlite3.connect('database.db')
+        c = conn.cursor()
         
-        return True
-    except Exception as e:
-        print(f"Error storing notification in Firebase: {e}")
-        return False
+        try:
+            c.execute('''
+                INSERT INTO notifications (message, type)
+                VALUES (?, ?)
+            ''', (data['message'], data.get('type', 'movement')))
+            conn.commit()
+            notification_id = c.lastrowid
+            
+            notification_data = {
+                'id': notification_id,
+                'message': data['message'],
+                'type': data.get('type', 'movement'),
+                'timestamp': datetime.now().isoformat()
+            }
+            
+            # Global broadcast only if no user_id (for testing)
+            socketio.emit('new_notification', notification_data)
+            
+            return jsonify(notification_data), 201
+        except Exception as e:
+            print(f"Error creating notification: {e}")
+            return jsonify({'error': str(e)}), 500
+        finally:
+            conn.close()
 
-# Notifications endpoints
 @app.route('/api/notifications', methods=['GET'])
 def get_notifications():
     # Get user_id from request parameter if provided
     user_id = request.args.get('user_id')
     print(f"GET /api/notifications - User ID: {user_id}")
     
-    # If user_id is provided and Firebase is enabled, get notifications from Firebase
-    if user_id and firebase_enabled:
+    # If user_id is provided, ONLY get notifications from Firebase
+    if user_id:
         try:
+            if not firebase_enabled:
+                print("Firebase not enabled, returning empty list")
+                return jsonify([])
+                
             print(f"Attempting to fetch notifications from Firebase for user {user_id}")
             # Get user's notifications from Firebase
             notifications_ref = db.collection('users').document(user_id).collection('notifications')
@@ -191,10 +235,10 @@ def get_notifications():
             return jsonify(notifications)
         except Exception as e:
             print(f"Error getting notifications from Firebase: {e}")
-            # Fall back to SQLite
-            print("Falling back to SQLite database")
+            # If Firebase is available but there was an error, return empty list
+            return jsonify([])
     
-    # Fall back to SQLite database
+    # Only use SQLite if no user_id is provided (for anonymous users)
     conn = sqlite3.connect('database.db')
     c = conn.cursor()
     
@@ -214,6 +258,33 @@ def get_notifications():
         return jsonify({'error': str(e)}), 500
     finally:
         conn.close()
+
+# function definition back to your code:
+def store_notification_in_firebase(notification_data, user_id=None):
+    if not firebase_enabled:
+        print("Firebase not enabled, skipping Firestore update")
+        return False
+    
+    try:
+        # Format notification data for Firestore
+        firebase_notification = {
+            'message': notification_data['message'],
+            'type': notification_data['type'],
+            'timestamp': firestore.SERVER_TIMESTAMP,
+            'read': False
+        }
+        
+        if user_id:
+            # Add notification only to the specific user
+            db.collection('users').document(user_id).collection('notifications').add(firebase_notification)
+            print(f"Notification added to user {user_id}")
+            return True
+        else:
+            print("No user_id provided, skipping notification storage")
+            return False
+    except Exception as e:
+        print(f"Error storing notification in Firebase: {e}")
+        return False
         
 @app.route('/api/video-feed')
 def video_feed():
@@ -335,11 +406,17 @@ def trigger_alarm():
         }
         
         # Store in Firebase
-        store_notification_in_firebase(notification_data)
+        user_id = request.args.get('user_id')
+        if user_id:
+            store_notification_in_firebase(notification_data, user_id)
         
         # Emit update via Socket.IO
         socketio.emit('bike_data', bike_data)
-        socketio.emit('new_notification', notification_data)
+
+        if user_id:
+            socketio.emit('new_notification', notification_data, room=user_id)
+        else:
+            socketio.emit('new_notification', notification_data)
         
         return jsonify({"success": True, "message": "Alarm triggered"})
     except Exception as e:
@@ -380,11 +457,17 @@ def stop_alarm():
         }
         
         # Store in Firebase
-        store_notification_in_firebase(notification_data)
+        user_id = request.args.get('user_id')
+        if user_id:
+            store_notification_in_firebase(notification_data, user_id)
         
         # Emit update via Socket.IO
         socketio.emit('bike_data', bike_data)
-        socketio.emit('new_notification', notification_data)
+
+        if user_id:
+            socketio.emit('new_notification', notification_data, room=user_id)
+        else:
+            socketio.emit('new_notification', notification_data)
         
         return jsonify({"success": True, "message": "Alarm stopped"})
     except Exception as e:
@@ -396,10 +479,20 @@ def stop_alarm():
 @socketio.on('connect')
 def handle_connect():
     print('Client connected')
+    # Get user ID from request args or session
+    user_id = request.args.get('user_id')
+    if user_id:
+        # Join the user to a room with their user_id
+        join_room(user_id)
+        print(f"User {user_id} joined their personal room")
     emit('bike_data', bike_data)
 
 @socketio.on('disconnect')
 def handle_disconnect():
+    user_id = request.args.get('user_id')
+    if user_id:
+        leave_room(user_id)
+        print(f"User {user_id} left their personal room")
     print('Client disconnected')
 
 # Simulate moving bike when no actual GPS is available

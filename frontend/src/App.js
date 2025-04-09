@@ -228,7 +228,9 @@ function App() {
     console.log('Connecting to Socket.io server at:', backendUrl);
     
     // Connect to your Flask backend with Socket.IO
-    const newSocket = io(backendUrl);
+    const newSocket = io(backendUrl, {
+      query: { user_id: userData?.uid }
+    });
     
     newSocket.on('connect', () => {
       console.log('Connected to server');
@@ -248,10 +250,6 @@ function App() {
       console.log('Received notification:', notification);
       setNotifications(prev => [notification, ...prev]);
       
-      // Save to Firestore if we have user data
-      if (userData?.uid) {
-        saveNotification(userData.uid, notification);
-      }
     });
     
     newSocket.on('disconnect', () => {
@@ -265,18 +263,12 @@ function App() {
     setSocket(newSocket);
     
     // Fetch initial notifications when logged in
-    fetch(`${backendUrl}${CONFIG.apiEndpoints.notifications}`)
+    fetch(`${backendUrl}${CONFIG.apiEndpoints.notifications}?user_id=${userData?.uid}`)
       .then(response => response.json())
       .then(data => {
         console.log('Fetched notifications:', data);
         setNotifications(data);
         
-        // Save initial notifications to Firestore
-        if (userData?.uid) {
-          data.forEach(notification => {
-            saveNotification(userData.uid, notification);
-          });
-        }
       })
       .catch(error => {
         console.error('Error fetching notifications:', error);
@@ -317,7 +309,7 @@ function App() {
       
       // Fallback to REST API
       console.log('Triggering alarm via REST API');
-      const response = await fetch(`${backendUrl}${CONFIG.apiEndpoints.triggerAlarm}`, {
+      const response = await fetch(`${CONFIG.backendUrl}${CONFIG.apiEndpoints.triggerAlarm}?user_id=${userData.uid}`, {
         method: 'POST',
       });
 
@@ -371,7 +363,7 @@ function App() {
       
       // Fallback to REST API
       console.log('Stopping alarm via REST API');
-      const response = await fetch(`${backendUrl}${CONFIG.apiEndpoints.stopAlarm}`, {
+      const response = await fetch(`${CONFIG.backendUrl}${CONFIG.apiEndpoints.stopAlarm}?user_id=${userData.uid}`, {
         method: 'POST',
       });
       
