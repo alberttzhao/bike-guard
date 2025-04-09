@@ -10,23 +10,43 @@ import time
 import random
 import socketio
 import firebase_admin
+import os
 from firebase_admin import credentials, firestore
+
+# When you run your backend on different devices, you can set the environment variable:
+
+# On your development machine: FLASK_ENV=development python app.py
+# On Raspberry Pi: FLASK_ENV=raspberry python app.py
+# In production: FLASK_ENV=production python app.py
+
+# This approach ensures your app can seamlessly switch between different environments while maintaining connectivity to Firebase for notifications.
+
+# Determine environment
+ENV = os.environ.get('FLASK_ENV', 'development')
+
+# Set up Firebase credentials based on environment
+if ENV == 'production':
+    FIREBASE_CREDENTIALS = './prod-serviceAccountKey.json'
+elif ENV == 'raspberry':
+    FIREBASE_CREDENTIALS = './raspberry-serviceAccountKey.json'
+else:
+    FIREBASE_CREDENTIALS = './dev-serviceAccountKey.json'
 
 # Initialize Firebase with your service account credentials
 # You'll need to create a serviceAccountKey.json from your Firebase console
 try:
-    cred = credentials.Certificate('../backend/bike-guard-2025-firebase-adminsdk-fbsvc-6f53d1a6af.json')  # Adjust path as needed
+    cred = credentials.Certificate(FIREBASE_CREDENTIALS)
     firebase_admin.initialize_app(cred)
     db = firestore.client()
     firebase_enabled = True
-    print("Firebase initialized successfully")
+    print(f"Firebase initialized successfully for {ENV} environment")
 except Exception as e:
     firebase_enabled = False
     print(f"Firebase initialization failed: {e}")
     print("Continuing without Firebase integration")
 
 app = Flask(__name__)
-CORS(app)
+CORS(app, origins=["http://localhost:3000", "http://192.168.1.XXX:3000", "https://bike-guard-2025.web.app"])
 socketio = SocketIO(app, cors_allowed_origins="*", async_mode='threading')
 
 def get_ip():

@@ -1,6 +1,6 @@
 {
   "short_name": "BikeGuard",
-  "name": "BikeGuard Security",
+  "name": "BikeGuard - Bicycle Security System",
   "icons": [
     {
       "src": "favicon.ico",
@@ -8,20 +8,18 @@
       "type": "image/x-icon"
     },
     {
-      "src": "bike-guard-logo-192.png",
+      "src": "logo192.png",
       "type": "image/png",
       "sizes": "192x192"
     },
     {
-      "src": "bike-guard-logo-512.png",
+      "src": "logo512.png",
       "type": "image/png",
-      "sizes": "512x512",
-      "purpose": "any maskable"
+      "sizes": "512x512"
     }
   ],
   "start_url": ".",
   "display": "standalone",
   "theme_color": "#1a508b",
-  "background_color": "#f8f9fa",
-  "orientation": "portrait"
+  "background_color": "#ffffff"
 }
