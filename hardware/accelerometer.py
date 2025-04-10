@@ -183,7 +183,7 @@ def accel_thread():
 				if pitch_change > THRESHOLD_PITCH_CHANGE or roll_change > THRESHOLD_ROLL_CHANGE:
 					print("Sudden change detected!")
 					control_buzzer(GPIO.HIGH)
-					time.sleep(5)  # keep buzzer on briefly
+					time.sleep(3)  # keep buzzer on briefly
 					control_buzzer(GPIO.LOW)
 					send_notification("Sudden movement detected!")
 			# Save current as previous for next loop
