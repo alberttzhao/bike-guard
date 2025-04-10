@@ -7,3 +7,11 @@ frontend/node_modules/
 # Common
 .env
 backend/database.db
+
+
+# Firebase:
+*serviceAccountKey.json
+*firebase-credentials.json
+*.json
+!package.json
+!package-lock.json

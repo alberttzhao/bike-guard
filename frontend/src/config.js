@@ -18,18 +18,18 @@ const getBackendUrl = () => {
   }
   
   // Check if we're connecting to Raspberry Pi on local network
-  // You can update this detection logic based on your needs
+  // Using common local network patterns and the bikeguard.local hostname
   const isRaspberryPiNetwork = window.location.hostname.includes('192.168') || 
                                window.location.hostname.includes('10.0') ||
                                window.location.hostname === 'bikeguard.local';
   
   if (isRaspberryPiNetwork) {
-    // Return Raspberry Pi's address
-    return 'http://192.168.1.XXX:5001'; // Replace with your Pi's actual IP
+    // Return local network Raspberry Pi's address - use the actual IP on your local network
+    return 'http://128.197.180.214:5001'; // Using the Pi's IP you provided
   }
   
   // Default for production deployment (Firebase hosting, etc.)
-  return 'http://128.197.180.214:5001'; // Your production backend address
+  return 'http://128.197.180.214:5001'; // Using the same Pi IP for production
 };
 
 export const CONFIG = {

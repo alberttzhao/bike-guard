@@ -21,16 +21,58 @@ from firebase_admin import credentials, firestore
 
 # This approach ensures your app can seamlessly switch between different environments while maintaining connectivity to Firebase for notifications.
 
+# First try to get credentials from environment variable
+firebase_creds_json = os.environ.get('FIREBASE_CREDENTIALS')
+
 # Determine environment
 ENV = os.environ.get('FLASK_ENV', 'development')
 
 # Set up Firebase credentials based on environment
-if ENV == 'production':
-    FIREBASE_CREDENTIALS = './prod-serviceAccountKey.json'
-elif ENV == 'raspberry':
-    FIREBASE_CREDENTIALS = './raspberry-serviceAccountKey.json'
-else:
-    FIREBASE_CREDENTIALS = './bike-guard-2025-firebase-adminsdk-fbsvc-6ac8fa5688.json'
+# Try to initialize Firebase
+try:
+    # Check if credentials JSON string is available in environment
+    if firebase_creds_json:
+        # Write credentials to temporary file
+        with open('temp_credentials.json', 'w') as f:
+            f.write(firebase_creds_json)
+        cred = credentials.Certificate('temp_credentials.json')
+        # Clean up after loading
+        os.remove('temp_credentials.json')
+    else:
+        # Look for credentials file in various locations
+        if ENV == 'production':
+            cred_path = './prod-serviceAccountKey.json'
+        elif ENV == 'raspberry':
+            cred_path = './raspberry-serviceAccountKey.json'
+        else:
+            # Try multiple possible local paths
+            possible_paths = [
+                './dev-serviceAccountKey.json',
+                './serviceAccountKey.json',
+                './firebase-credentials.json',
+                '../backend/serviceAccountKey.json'
+            ]
+            
+            cred_path = None
+            for path in possible_paths:
+                if os.path.exists(path):
+                    cred_path = path
+                    break
+                    
+            if not cred_path:
+                raise FileNotFoundError("No Firebase credentials file found")
+                
+        cred = credentials.Certificate(cred_path)
+        
+    firebase_admin.initialize_app(cred)
+    db = firestore.client()
+    firebase_enabled = True
+    print(f"Firebase initialized successfully for {ENV} environment")
+except Exception as e:
+    firebase_enabled = False
+    print(f"Firebase initialization failed: {e}")
+    print(f"Detailed error info: {type(e).__name__}")
+    print("Continuing without Firebase integration")
 
 # Initialize Firebase with your service account credentials
 # You'll need to create a serviceAccountKey.json from your Firebase console
@@ -46,7 +88,16 @@ except Exception as e:
     print("Continuing without Firebase integration")
 
 app = Flask(__name__)
-CORS(app, origins=["http://localhost:3000", "http://192.168.1.XXX:3000", "https://bike-guard-2025.web.app"])
+CORS(app, origins=[
+    "http://localhost:3000", 
+    "http://127.0.0.1:3000",
+    "http://192.168.1.0/24:3000",  # Common local subnet
+    "http://10.0.0.0/8:3000",      # Common local subnet
+    "http://bikeguard.local:3000", 
+    "https://bike-guard-2025.web.app",
+    "https://128.197.180.214:5001",
+    "https://128.197.180.214:3000"
+])
 socketio = SocketIO(app, cors_allowed_origins="*", async_mode='threading')
 
 def get_ip():
