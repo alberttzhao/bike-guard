@@ -160,18 +160,6 @@ def calculate_pitch_roll(accel):
 	pitch = math.atan2(ay, math.sqrt(ax * ax + az * az)) * (180 / math.pi)
 	roll = math.atan2(-ax, az) * (180 / math.pi)
 
-	#try:
-	#	if pitch > 5 or roll > 10:
-	#		print("Movement detected!")
-	#		control_buzzer(GPIO.HIGH)  # Turn buzzer on
-	#		time.sleep(30)  # Buzzer on for 1 second
-	#		control_buzzer(GPIO.LOW)  # Turn buzzer off
-	#		time.sleep(1)  # Buzzer off for 1 second
-	#		send_notification("Your bike is moving too much!")
-	#except KeyboardInterrupt:
-	#	print("\nExiting program.")
-	#	GPIO.cleanup()
-
 	return pitch, roll
 
 def accel_thread():
@@ -195,7 +183,7 @@ def accel_thread():
 				if pitch_change > THRESHOLD_PITCH_CHANGE or roll_change > THRESHOLD_ROLL_CHANGE:
 					print("Sudden change detected!")
 					control_buzzer(GPIO.HIGH)
-					time.sleep(1)  # keep buzzer on briefly
+					time.sleep(5)  # keep buzzer on briefly
 					control_buzzer(GPIO.LOW)
 					send_notification("Sudden movement detected!")
 			# Save current as previous for next loop
