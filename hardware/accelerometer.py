@@ -175,27 +175,43 @@ def calculate_pitch_roll(accel):
 	return pitch, roll
 
 def accel_thread():
+	prev_pitch = None
+	prev_roll = None
+	THRESHOLD_PITCH_CHANGE = 10.0  # degrees
+	THRESHOLD_ROLL_CHANGE = 15.0  # degrees
 	try:
 		while True:
 			data = read_mpu_data()
 			pitch, roll = calculate_pitch_roll(data["accel"])
 			#pitch, roll = read_mpu_data
-			print("pitch", pitch)
-			print("roll", roll)
+			if prev_pitch is not None and prev_roll is not None:
+				pitch_change = abs(pitch - prev_pitch)
+				roll_change = abs(roll - prev_roll)
+				print("change pitch: ", pitch_change)
+				print("change roll: ", roll_change)
+
+				if pitch_change > THRESHOLD_PITCH_CHANGE or roll_change > THRESHOLD_ROLL_CHANGE:
+					print("Sudden change detected!")
+					control_buzzer(GPIO.HIGH)
+					time.sleep(1)  # keep buzzer on briefly
+					control_buzzer(GPIO.LOW)
+					send_notification("Sudden movement detected!")
+			# Save current as previous for next loop
+			prev_pitch = pitch
+			prev_roll = roll
+
 			#-------------- CSV file writing
 			# Prepare row for CSV
 			csv_row = [
-				f"{data['accel']['x']:.2f}", f"{data['accel']['y']:.2f}", f"{data['accel']['z']:.2f}",
-				f"{data['gyro']['x']:.2f}", f"{data['gyro']['y']:.2f}", f"{data['gyro']['z']:.2f}",
-				f"{pitch:.2f}", f"{roll:.2f}"
-				]
-			# Write row to CSV
+                f"{data['accel']['x']:.2f}", f"{data['accel']['y']:.2f}", f"{data['accel']['z']:.2f}",
+                f"{data['gyro']['x']:.2f}", f"{data['gyro']['y']:.2f}", f"{data['gyro']['z']:.2f}",
+                f"{pitch:.2f}", f"{roll:.2f}"
+            ]
 			with open(csv_file_path, mode="a", newline="") as file:
 				writer = csv.writer(file)
 				writer.writerow(csv_row)
 
-			#----------- CSV file writing ends
-			sys.stdout.flush()  # Add this line to flush the output buffer
+			sys.stdout.flush()
 			time.sleep(1)
 
 
