@@ -27,7 +27,6 @@ firebase_creds_json = os.environ.get('FIREBASE_CREDENTIALS')
 # Determine environment
 ENV = os.environ.get('FLASK_ENV', 'development')
 
-# Set up Firebase credentials based on environment
 # Try to initialize Firebase
 try:
     # Check if credentials JSON string is available in environment
@@ -50,7 +49,8 @@ try:
                 './dev-serviceAccountKey.json',
                 './serviceAccountKey.json',
                 './firebase-credentials.json',
-                '../backend/serviceAccountKey.json'
+                '../backend/serviceAccountKey.json',
+                './bike-guard-2025-firebase-adminsdk-fbsvc-ca81ee7fd8.json'
             ]
             
             cred_path = None
@@ -72,19 +72,6 @@ except Exception as e:
     firebase_enabled = False
     print(f"Firebase initialization failed: {e}")
     print(f"Detailed error info: {type(e).__name__}")
-    print("Continuing without Firebase integration")
-
-# Initialize Firebase with your service account credentials
-# You'll need to create a serviceAccountKey.json from your Firebase console
-try:
-    cred = credentials.Certificate(FIREBASE_CREDENTIALS)
-    firebase_admin.initialize_app(cred)
-    db = firestore.client()
-    firebase_enabled = True
-    print(f"Firebase initialized successfully for {ENV} environment")
-except Exception as e:
-    firebase_enabled = False
-    print(f"Firebase initialization failed: {e}")
     print("Continuing without Firebase integration")
 
 app = Flask(__name__)
