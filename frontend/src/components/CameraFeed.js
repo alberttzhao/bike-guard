@@ -13,7 +13,8 @@ const CameraFeed = () => {
         if (imgRef.current) {
           // Set the src directly to the stream URL
           //imgRef.current.src = 'http://128.197.180.214:5001/api/video-feed';
-          imgRef.current.src = `${CONFIG.backendUrl}${CONFIG.apiEndpoints.videoFeed}`;
+          // imgRef.current.src = `${CONFIG.backendUrl}${CONFIG.apiEndpoints.videoFeed}`;
+          imgRef.current.src = `${CONFIG.cameraUrl}${CONFIG.apiEndpoints.videoFeed}`;
 
           // Add error event listener to detect loading failures
           imgRef.current.onerror = () => {
