@@ -1,7 +1,7 @@
 // // src/config.js
 // export const CONFIG = {
-//     //backendUrl: 'http://128.197.180.214:5001',
-//     backendUrl: 'http://localhost:5001',
+//     backendUrl: 'http://128.197.180.214:5001',
+//     // backendUrl: 'http://localhost:5001',
 //     apiEndpoints: {
 //       videoFeed: '/api/video-feed',
 //       notifications: '/api/notifications',
@@ -14,7 +14,8 @@
 // const getBackendUrl = () => {
 //   // For development on localhost
 //   if (window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1') {
-//     return 'http://localhost:5001';
+//     // return 'http://localhost:5001';
+//     return 'http://128.197.180.214:5001';
 //   }
   
 //   // Check if we're connecting to Raspberry Pi on local network
@@ -47,10 +48,11 @@ const getBackendUrl = () => {
   // For development on localhost
   if (window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1') {
     // Check if we want to use local backend or Raspberry Pi
-    const useLocalBackend = false; // Set this to false to use Raspberry Pi from localhost
+    const useLocalBackend = true; // Set this to false to use Raspberry Pi from localhost
     
     if (useLocalBackend) {
-      return 'http://localhost:5001';
+      // return 'http://localhost:5001';
+      return 'http://128.197.180.214:5001';
     } else {
       return 'http://128.197.180.214:5001';
     }
