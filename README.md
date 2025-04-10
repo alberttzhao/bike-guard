@@ -106,3 +106,19 @@ bike-guard/
 ## Notes
 - You need Python 3.8+ installed
 - Raspberry Pi Camera module code written for Debian Bullseye Raspberry Pi OS
+
+# BikeGuard - Development Setup
+
+## Firebase Configuration
+
+For local development, you need to set up Firebase credentials:
+
+1. Option 1: Create a file named `serviceAccountKey.json` in the backend directory with your Firebase service account key.
+
+2. Option 2: Set an environment variable with your Firebase credentials:
+   ```bash
+   # On Linux/Mac
+   export FIREBASE_CREDENTIALS='{"type":"service_account","project_id":"..."}'
+   
+   # On Windows (PowerShell)
+   $env:FIREBASE_CREDENTIALS='{"type":"service_account","project_id":"..."}'
