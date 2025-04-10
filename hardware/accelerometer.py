@@ -160,17 +160,17 @@ def calculate_pitch_roll(accel):
 	pitch = math.atan2(ay, math.sqrt(ax * ax + az * az)) * (180 / math.pi)
 	roll = math.atan2(-ax, az) * (180 / math.pi)
 
-	try:
-		if pitch > 5 or roll > 10:
-			print("Movement detected!")
-			control_buzzer(GPIO.HIGH)  # Turn buzzer on
-			time.sleep(30)  # Buzzer on for 1 second
-			control_buzzer(GPIO.LOW)  # Turn buzzer off
-			time.sleep(1)  # Buzzer off for 1 second
-			send_notification("Your bike is moving too much!")
-	except KeyboardInterrupt:
-		print("\nExiting program.")
-		GPIO.cleanup()
+	#try:
+	#	if pitch > 5 or roll > 10:
+	#		print("Movement detected!")
+	#		control_buzzer(GPIO.HIGH)  # Turn buzzer on
+	#		time.sleep(30)  # Buzzer on for 1 second
+	#		control_buzzer(GPIO.LOW)  # Turn buzzer off
+	#		time.sleep(1)  # Buzzer off for 1 second
+	#		send_notification("Your bike is moving too much!")
+	#except KeyboardInterrupt:
+	#	print("\nExiting program.")
+	#	GPIO.cleanup()
 
 	return pitch, roll
 
@@ -180,7 +180,9 @@ def accel_thread():
 	THRESHOLD_PITCH_CHANGE = 10.0  # degrees
 	THRESHOLD_ROLL_CHANGE = 15.0  # degrees
 	try:
+		print("ciao1")
 		while True:
+			print("ciao2")
 			data = read_mpu_data()
 			pitch, roll = calculate_pitch_roll(data["accel"])
 			#pitch, roll = read_mpu_data
