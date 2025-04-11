@@ -131,25 +131,54 @@ def read_mpu_data():
 		}
 
 
+# def send_notification(message):
+#     try:
+#         response = requests.post(
+#             f'{BACKEND_URL}/api/notifications',
+#             json={
+#                 'message': message,
+#                 'type': 'movement'
+#             },
+#             headers={
+#                 'Content-Type': 'application/json'
+#             }
+#         )
+#         if response.status_code == 201:
+#             print(f"Notification sent successfully to {BACKEND_URL}")
+#         else:
+#             print(f"Failed to send notification: {response.status_code}")
+#             print(f"Response: {response.text}")
+#     except Exception as e:
+#         print(f"Error sending notification to {BACKEND_URL}: {e}")
+
 def send_notification(message):
     try:
+        # HARDCODE THE USER ID THAT SHOULD RECEIVE NOTIFICATIONS
+        # (Get this from your Firebase console or frontend)
+        USER_ID = "kMKNpdpluLYafSBX4DwG3TbJHav2"  # Replace with actual user ID
+        
         response = requests.post(
-            f'{BACKEND_URL}/api/notifications',
+            f'{BACKEND_URL}/api/notifications?user_id={USER_ID}',
             json={
                 'message': message,
                 'type': 'movement'
             },
             headers={
                 'Content-Type': 'application/json'
-            }
+            },
+            timeout=5
         )
+        
         if response.status_code == 201:
-            print(f"Notification sent successfully to {BACKEND_URL}")
+            print(f"Notification sent successfully to user {USER_ID}")
+            return True
         else:
             print(f"Failed to send notification: {response.status_code}")
             print(f"Response: {response.text}")
+            return False
     except Exception as e:
-        print(f"Error sending notification to {BACKEND_URL}: {e}")
+        print(f"Error sending notification: {e}")
+        return False
 		
 # Calculate Pitch and Roll
 def calculate_pitch_roll(accel):
