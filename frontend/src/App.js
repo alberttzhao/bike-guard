@@ -217,6 +217,18 @@ function App() {
     // Store a flag to open the Bluetooth setup page directly
     sessionStorage.setItem('openBluetoothSetup', 'true');
   };
+
+  // constantly check for notifications 
+  useEffect(() => {
+    if (!isLoggedIn || !userData?.uid) return;
+    
+    // Poll for new notifications every 10 seconds
+    const interval = setInterval(() => {
+      fetchNotifications();
+    }, 10000);
+    
+    return () => clearInterval(interval);
+  }, [isLoggedIn, userData?.uid]);
   
   // Connect to backend Socket.io when logged in
   useEffect(() => {
