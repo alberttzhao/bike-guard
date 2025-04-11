@@ -153,32 +153,23 @@ def read_mpu_data():
 
 def send_notification(message):
     try:
-        # HARDCODE THE USER ID THAT SHOULD RECEIVE NOTIFICATIONS
-        # (Get this from your Firebase console or frontend)
-        USER_ID = "kMKNpdpluLYafSBX4DwG3TbJHav2"  # Replace with actual user ID
+        USER_ID = "kMKNpdpluLYafSBX4DwG3TbJHav2"  # Your user ID
         
+        # Optimized request with timeout
         response = requests.post(
             f'{BACKEND_URL}/api/notifications?user_id={USER_ID}',
-            json={
-                'message': message,
-                'type': 'movement'
-            },
-            headers={
-                'Content-Type': 'application/json'
-            },
-            timeout=5
+            json={'message': message, 'type': 'movement'},
+            headers={'Content-Type': 'application/json'},
+            timeout=2  # Shorter timeout
         )
         
-        if response.status_code == 201:
-            print(f"Notification sent successfully to user {USER_ID}")
-            return True
-        else:
-            print(f"Failed to send notification: {response.status_code}")
-            print(f"Response: {response.text}")
-            return False
+        if response.status_code != 201:
+            print(f"Warning: Notification may be delayed. Status: {response.status_code}")
+        return True
+        
     except Exception as e:
-        print(f"Error sending notification: {e}")
-        return False
+        print(f"Non-critical notification error: {e}")
+        return True  # Still continue operation
 		
 # Calculate Pitch and Roll
 def calculate_pitch_roll(accel):

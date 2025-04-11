@@ -75,16 +75,21 @@ except Exception as e:
     print("Continuing without Firebase integration")
 
 app = Flask(__name__)
-CORS(app, origins=[
-    "http://localhost:3000", 
-    "http://127.0.0.1:3000",
-    "http://192.168.1.0/24:3000",  # Common local subnet
-    "http://10.0.0.0/8:3000",      # Common local subnet
-    "http://bikeguard.local:3000", 
-    "https://bike-guard-2025.web.app",
-    "https://128.197.180.214:5001",
-    "https://128.197.180.214:3000"
-])
+CORS(app, resources={
+    r"/api/*": {
+        "origins": [
+            "http://localhost:3000", 
+            "http://127.0.0.1:3000",
+            "http://192.168.*",
+            "http://10.*",
+            "https://bike-guard-2025.web.app",
+            "http://128.197.180.214:3000",
+            "http://128.197.180.214:5001"
+        ],
+        "methods": ["GET", "POST", "PUT", "DELETE"],
+        "allow_headers": ["Content-Type", "Authorization"]
+    }
+})
 socketio = SocketIO(app, cors_allowed_origins="*", async_mode='threading')
 
 def get_ip():
@@ -170,6 +175,7 @@ def load_bike_data():
 # Add a function to store notifications in Firebase
 @app.route('/api/notifications', methods=['POST'])
 def create_notification():
+    print(f"Received notification from user: {request.args.get('user_id')}")
     data = request.json
     print(f"Received notification: {data}")
     
@@ -179,7 +185,18 @@ def create_notification():
     # Only store in Firebase if user_id is provided
     if user_id and firebase_enabled:
         try:
-            # Format notification data for Firestore
+            # 1. First emit via Socket.IO for instant frontend update
+            notification_data = {
+                'id': str(datetime.now().timestamp()),  # Temporary ID
+                'message': data['message'],
+                'type': data.get('type', 'movement'),
+                'timestamp': datetime.now().isoformat()
+            }
+            
+            socketio.emit('new_notification', notification_data, room=user_id)
+            print(f"INSTANT: Emitted to {user_id} via Socket.IO")
+            
+            # 2. Then store in Firebase (non-blocking)
             firebase_notification = {
                 'message': data['message'],
                 'type': data.get('type', 'movement'),
@@ -187,25 +204,21 @@ def create_notification():
                 'read': False
             }
             
-            # Add notification only to the specific user
-            doc_ref = db.collection('users').document(user_id).collection('notifications').add(firebase_notification)
-            notification_id = doc_ref[1].id  # Get the generated ID
+            # Use async firebase write
+            def async_firebase_write():
+                try:
+                    doc_ref = db.collection('users').document(user_id)\
+                                .collection('notifications').add(firebase_notification)
+                    print(f"PERSISTED: Saved to Firebase {doc_ref[1].id}")
+                except Exception as e:
+                    print(f"Firebase write error: {e}")
             
-            notification_data = {
-                'id': notification_id,
-                'message': data['message'],
-                'type': data.get('type', 'movement'),
-                'timestamp': datetime.now().isoformat()
-            }
-            
-            print(f"Notification added to user {user_id}")
-            
-            # Emit notification via Socket.IO ONLY to this user
-            socketio.emit('new_notification', notification_data, room=user_id)
+            threading.Thread(target=async_firebase_write).start()
             
             return jsonify(notification_data), 201
+            
         except Exception as e:
-            print(f"Error storing notification in Firebase: {e}")
+            print(f"Error: {e}")
             return jsonify({'error': str(e)}), 500
     else:
         # For testing only - should be removed in production
@@ -326,10 +339,10 @@ def store_notification_in_firebase(notification_data, user_id=None):
         
 @app.route('/api/video-feed')
 def video_feed():
-    # This function seems to be missing implementation
-    # You would need to implement generate_frames()
-    # For now, return a placeholder response
-    return Response("Video feed not implemented", mimetype='text/plain')
+    # Return the actual video feed URL
+    return jsonify({
+        "videoUrl": "http://128.197.180.214:5001/api/video-feed"  # Adjust to your actual video endpoint
+    })
 
 # Location tracking endpoints
 @app.route('/api/bike-location', methods=['GET'])

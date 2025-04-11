@@ -44,33 +44,62 @@
 // };
 
 // config.js
-const getBackendUrl = () => {
+// const getBackendUrl = () => {
+//   // For development on localhost
+//   if (window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1') {
+//     // Check if we want to use local backend or Raspberry Pi
+//     const useLocalBackend = true; // Set this to false to use Raspberry Pi from localhost
+    
+//     if (useLocalBackend) {
+//       // return 'http://localhost:5001';
+//       return 'http://128.197.180.214:5001';
+//     } else {
+//       return 'http://128.197.180.214:5001';
+//     }
+//   }
+  
+//   // For any other hostname, use the Raspberry Pi
+//   return 'http://128.197.180.214:5001';
+// };
+
+// // Split endpoints by service if needed
+// const getCameraUrl = () => {
+//   // Always use Raspberry Pi for camera feed
+//   return 'http://128.197.180.214:5001';
+// };
+
+// export const CONFIG = {
+//   backendUrl: getBackendUrl(),
+//   cameraUrl: getCameraUrl(), // Separate URL for camera
+//   apiEndpoints: {
+//     videoFeed: '/api/video-feed',
+//     notifications: '/api/notifications',
+//     triggerAlarm: '/api/trigger-alarm',
+//     stopAlarm: '/api/stop-alarm'
+//   }
+// };
+
+const getBackendUrl = (serviceType = 'default') => {
   // For development on localhost
   if (window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1') {
-    // Check if we want to use local backend or Raspberry Pi
-    const useLocalBackend = true; // Set this to false to use Raspberry Pi from localhost
-    
-    if (useLocalBackend) {
-      // return 'http://localhost:5001';
-      return 'http://128.197.180.214:5001';
-    } else {
+    // Camera always uses Pi's IP
+    if (serviceType === 'camera') {
       return 'http://128.197.180.214:5001';
     }
+    // Notifications use localhost
+    if (serviceType === 'notifications') {
+      return 'http://localhost:5001';
+    }
+    // Default (alarms, etc.) uses Pi's IP
+    return 'http://128.197.180.214:5001';
   }
   
-  // For any other hostname, use the Raspberry Pi
-  return 'http://128.197.180.214:5001';
-};
-
-// Split endpoints by service if needed
-const getCameraUrl = () => {
-  // Always use Raspberry Pi for camera feed
+  // For production or direct Pi access
   return 'http://128.197.180.214:5001';
 };
 
 export const CONFIG = {
-  backendUrl: getBackendUrl(),
-  cameraUrl: getCameraUrl(), // Separate URL for camera
+  getBackendUrl: getBackendUrl,
   apiEndpoints: {
     videoFeed: '/api/video-feed',
     notifications: '/api/notifications',

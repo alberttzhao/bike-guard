@@ -88,7 +88,7 @@ function App() {
     try {
       const userId = userData?.uid;
       const response = await fetch(
-        `${CONFIG.backendUrl}${CONFIG.apiEndpoints.notifications}?user_id=${userId}`,
+        `${CONFIG.getBackendUrl('notifications')}${CONFIG.apiEndpoints.notifications}?user_id=${userId}`,
         {
           method: 'POST',
           headers: {
@@ -220,66 +220,96 @@ function App() {
   
   // Connect to backend Socket.io when logged in
   useEffect(() => {
-    if (!isLoggedIn || !isOnline) return;
-    
-    // Get your Raspberry Pi's IP address from the environment or configure it
-    const backendUrl = CONFIG.backendUrl;
-    
+    if (!isLoggedIn || !isOnline || !userData?.uid) return;
+  
+    const backendUrl = CONFIG.getBackendUrl();
     console.log('Connecting to Socket.io server at:', backendUrl);
     
-    // Connect to your Flask backend with Socket.IO
     const newSocket = io(backendUrl, {
-      query: { user_id: userData?.uid }
+      query: { user_id: userData.uid },
+      transports: ['websocket'],
+      reconnection: true,
+      reconnectionAttempts: 5,
+      reconnectionDelay: 1000,
+      timeout: 20000 // 20 seconds timeout
     });
-    
+  
+    // Notification handler with deduplication
+    const handleNotification = (notification) => {
+      console.log('Real-time notification:', notification);
+      setNotifications(prev => {
+        // Check if notification already exists
+        const exists = prev.some(n => n.id === notification.id);
+        if (exists) {
+          console.log('Duplicate notification skipped');
+          return prev;
+        }
+        // Keep only the 50 most recent notifications
+        return [notification, ...prev].slice(0, 50);
+      });
+    };
+  
+    // Socket event handlers
     newSocket.on('connect', () => {
-      console.log('Connected to server');
-    });
-    
-    newSocket.on('bike_data', (data) => {
-      console.log('Received bike data:', data);
-      setBikeData(data);
+      console.log('Socket connected with ID:', newSocket.id);
+      console.log('Subscribed to room:', userData.uid);
       
-      // Save to Firestore if we have user data
+      // Fetch any potentially missed notifications on reconnect
+      fetchNotifications();
+    });
+  
+    newSocket.on('bike_data', (data) => {
+      console.log('Bike data update:', data);
+      setBikeData(data);
       if (userData?.uid && data.location) {
         saveBikeLocation(userData.uid, data.location);
       }
     });
-    
-    newSocket.on('new_notification', (notification) => {
-      console.log('Received notification:', notification);
-      setNotifications(prev => [notification, ...prev]);
-      
+  
+    newSocket.on('new_notification', handleNotification);
+  
+    newSocket.on('disconnect', (reason) => {
+      console.log('Socket disconnected:', reason);
     });
-    
-    newSocket.on('disconnect', () => {
-      console.log('Disconnected from server');
-    });
-    
+  
     newSocket.on('connect_error', (error) => {
       console.error('Connection error:', error);
     });
-    
+  
+    newSocket.on('error', (error) => {
+      console.error('Socket error:', error);
+    });
+  
     setSocket(newSocket);
-    
-    // Fetch initial notifications when logged in
-    fetch(`${backendUrl}${CONFIG.apiEndpoints.notifications}?user_id=${userData?.uid}`)
-      .then(response => response.json())
-      .then(data => {
-        console.log('Fetched notifications:', data);
-        setNotifications(data);
-        
-      })
-      .catch(error => {
-        console.error('Error fetching notifications:', error);
-      });
-    
-    // Cleanup on unmount or logout
+  
+    // Initial notifications load
+    fetchNotifications();
+  
+    // Cleanup function
     return () => {
-      console.log('Disconnecting socket');
+      console.log('Cleaning up socket connection');
+      newSocket.off('connect');
+      newSocket.off('bike_data');
+      newSocket.off('new_notification', handleNotification);
+      newSocket.off('disconnect');
+      newSocket.off('connect_error');
+      newSocket.off('error');
       newSocket.disconnect();
     };
-  }, [isLoggedIn, isOnline, userData]);
+  }, [isLoggedIn, isOnline, userData?.uid]); // Only re-run if these values change
+
+  const fetchNotifications = async () => {
+    try {
+      const response = await fetch(
+        `${CONFIG.getBackendUrl('notifications')}${CONFIG.apiEndpoints.notifications}?user_id=${userData?.uid}&limit=10`
+      );
+      const data = await response.json();
+      console.log("Initial notifications loaded:", data);
+      setNotifications(data);
+    } catch (error) {
+      console.error("Error loading notifications:", error);
+    }
+  };
 
   const handleAlarmTrigger = async () => {
     if (!isOnline) {
@@ -288,8 +318,7 @@ function App() {
     }
     
     try {
-      // Get your Raspberry Pi's IP address
-      const backendUrl = CONFIG.backendUrl;;
+      const backendUrl = CONFIG.getBackendUrl();
       
       // Use Socket.IO if connected
       if (socket && socket.connected) {
@@ -309,10 +338,10 @@ function App() {
       
       // Fallback to REST API
       console.log('Triggering alarm via REST API');
-      const response = await fetch(`${CONFIG.backendUrl}${CONFIG.apiEndpoints.triggerAlarm}?user_id=${userData.uid}`, {
+      const response = await fetch(`${backendUrl}${CONFIG.apiEndpoints.triggerAlarm}?user_id=${userData.uid}`, {
         method: 'POST',
       });
-
+  
       if (response.ok) {
         const data = await response.json();
         console.log('Alarm response:', data);
@@ -342,8 +371,7 @@ function App() {
     }
     
     try {
-      // Get your Raspberry Pi's IP address
-      const backendUrl = CONFIG.backendUrl;
+      const backendUrl = CONFIG.getBackendUrl();
       
       // Use Socket.IO if connected
       if (socket && socket.connected) {
@@ -363,7 +391,7 @@ function App() {
       
       // Fallback to REST API
       console.log('Stopping alarm via REST API');
-      const response = await fetch(`${CONFIG.backendUrl}${CONFIG.apiEndpoints.stopAlarm}?user_id=${userData.uid}`, {
+      const response = await fetch(`${backendUrl}${CONFIG.apiEndpoints.stopAlarm}?user_id=${userData.uid}`, {
         method: 'POST',
       });
       
