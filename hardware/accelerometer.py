@@ -153,7 +153,7 @@ def read_mpu_data():
 
 def send_notification(message):
     try:
-        USER_ID = "kMKNpdpluLYafSBX4DwG3TbJHav2"  # Your user ID
+        USER_ID = "ppGAWdLVilX4vGTaAl3xrCt9AJ02"  # Your user ID
         
         # Optimized request with timeout
         response = requests.post(

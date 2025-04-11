@@ -10,10 +10,10 @@ const LiveMap = ({ bikeLocation, isTracking }) => {
 
   
   // Default location if none provided
-  const defaultLocation = { lat: 37.7749, lng: -122.4194 }; // San Francisco
+  const defaultLocation = { lat: 42.349, lng: -71.106 }; // San Francisco
   
   // Use a static map image while the dynamic map loads
-  const staticMapUrl = `https://maps.googleapis.com/maps/api/staticmap?center=37.7749,-122.4194&zoom=14&size=600x400&markers=color:red%7C37.7749,-122.4194&key=AIzaSyDVbbG7oXS4khNtlg40cS21VVbUbMFrthk`;
+  const staticMapUrl = `https://maps.googleapis.com/maps/api/staticmap?center=${defaultLocation.lat},${defaultLocation.lng}&zoom=14&size=600x400&markers=color:red%7C${defaultLocation.lat},${defaultLocation.lng}&key=AIzaSyDVbbG7oXS4khNtlg40cS21VVbUbMFrthk`;
   
   // Load Google Maps script
   useEffect(() => {

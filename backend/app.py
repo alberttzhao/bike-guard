@@ -50,7 +50,7 @@ try:
                 './serviceAccountKey.json',
                 './firebase-credentials.json',
                 '../backend/serviceAccountKey.json',
-                './bike-guard-2025-firebase-adminsdk-fbsvc-539f1cd285.json'
+                './bike-guard-2025-firebase-adminsdk-fbsvc-ca81ee7fd8.json'
             ]
             
             cred_path = None
