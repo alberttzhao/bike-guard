@@ -188,9 +188,7 @@ def accel_thread():
 	THRESHOLD_PITCH_CHANGE = 10.0  # degrees
 	THRESHOLD_ROLL_CHANGE = 15.0  # degrees
 	try:
-		print("ciao1")
 		while True:
-			print("ciao2")
 			data = read_mpu_data()
 			pitch, roll = calculate_pitch_roll(data["accel"])
 			#pitch, roll = read_mpu_data

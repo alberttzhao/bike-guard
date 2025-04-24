@@ -2,16 +2,20 @@ import RPi.GPIO as GPIO
 import time
 import subprocess
 
+
+
 GPIO.setmode(GPIO.BCM)
 SWITCH_GPIO = 27
 GPIO.setup(SWITCH_GPIO, GPIO.IN, pull_up_down=GPIO.PUD_UP)
+buzzer_pin = 17 
+GPIO.setup(buzzer_pin, GPIO.OUT)
 
 process = None
 
 def start_script():
     global process
     if process is None:
-        print("Switch ON – starting accelerometer.py...")
+        print("Switch ON - starting accelerometer.py...")
         process = subprocess.Popen(["python3", "/home/Team8-C/bike-guard/hardware/accelerometer.py"])
     else:
         print("Script is already running.")
@@ -19,7 +23,7 @@ def start_script():
 def stop_script():
     global process
     if process:
-        print("Switch OFF – stopping accelerometer.py...")
+        print("Switch OFF - stopping accelerometer.py...")
         process.terminate()  # Gracefully terminate the process
         try:
             process.wait(timeout=5)  # Wait for the process to terminate
@@ -39,6 +43,7 @@ try:
                 start_script()
             else:  # Switch is OFF
                 stop_script()
+                GPIO.output(buzzer_pin, GPIO.LOW) # Turn buzzer OFF
             last_state = current_state
         time.sleep(0.1)
 except KeyboardInterrupt:
