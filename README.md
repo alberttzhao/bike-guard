@@ -3,7 +3,8 @@
 <p align="center">
 <img src="./photos/LogoRendition3.png" width="50%">
 </p>
-A bike security system using Raspberry Pi for movement detection and notifications.
+**BikeGuard** is a smart anti-theft system for bicycles that provides live monitoring and real time alerts to detect suspicious activity and notify owners instantly.
+
 
 ## Setup Instructions
 
@@ -78,6 +79,9 @@ And then repeat all the necessary steps to setup front and backend
 
 ### Hardware Setup (Raspberry Pi)
 1. Switch the key lock switch from OFF to ON
+<p align="center">
+<img src="./photos/on_off_switch.png" width="50%">
+</p>
 
 ## Project Structure
 ```
