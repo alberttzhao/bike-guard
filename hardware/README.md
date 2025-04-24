@@ -50,6 +50,14 @@ Our hardware setup includes a Key Lock Switch, a  Raspberry Pi 4, a correspondin
 1. Connect and turn on the router.
 2. Switch key switch to ON (green color)
 
+<p align="center">
+<img src="./photos/on_off_switch.png" width="80%">
+</p>
+
+<p align="center">  
+  <strong>Fig 4:</strong>: On Off switch
+</p>
+
 
 ## Code Flow Explained
 Figure 4 shows the onboard software flow chart. The Python script boot_try.py is run as soon as the Raspberry Pi boots. When the user switches the key switch to ON, the boot_try.py is alerted via GPIO connection and runs the accelerometer.py script. The accelerometer.py script is the device’s driving code. It has two processes running under a thread manager: the camera and the accelerometer. The camera thread continuously polls video data from the Raspberry Pi camera. This video stream is converted to a stream of discrete images for easier front-end implementation. This stream of discrete images is then sent to a Flask server hosted on the Raspberry Pi. This is then sent to our main backend server to be embedded into the front-end user interface. The accelerometer thread polls x, y, and z acceleration from the accelerometer, which the accelerometer thread then converts to pitch and roll. The accelerometer thread also keeps track of changes in pitch and roll by comparing current pitch and roll values to pitch and roll values from the previous time step. The change in pitch and roll is more useful for identifying shaking. The accelerometer thread then writes the x, y, and z acceleration as well as the change in pitch and roll values to a CSV fil,e which can be used later to train the machine learning model. If the accelerometer thread detects changes in pitch and roll values that are too high, it will set off the buzzer and send a notification to the back-end server.
@@ -59,7 +67,7 @@ Figure 4 shows the onboard software flow chart. The Python script boot_try.py is
 </p>
 
 <p align="center">
-  <strong>Fig 4:</strong> Onboard software flow chart
+  <strong>Fig 5:</strong> Onboard software flow chart
 </p>
 
 
