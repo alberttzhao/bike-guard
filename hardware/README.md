@@ -24,14 +24,14 @@ The components necessary for this project include:
 <img src="./photos/components_overview.png" width="50%">
 </p>
 <p align="center">
-Fig 1: Hardware components overview
+  <strong>Fig 1:</strong> Hardware components overview
 </p>
 
 <p align="center">
 <img src="./photos/hardware_actual.png" width="50%">
 </p>
 <p align="center">
-Fig 2: Completed hardware before entering enclosure.
+  <strong>Fig 2:</strong> Completed hardware before entering enclosure.
 </p>
 
 ## Set Up Explained
@@ -42,7 +42,7 @@ Our hardware setup includes a Key Lock Switch, a  Raspberry Pi 4, a correspondin
 </p>
 
 <p align="center">  
-**Fig 3**: Hardware diagram
+  <strong>Fig 3:</strong>: Hardware diagram
 </p>
 
 
