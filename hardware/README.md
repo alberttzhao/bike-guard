@@ -3,18 +3,22 @@ This read me will cover the hardware components of BikeGuard. Note to self for f
 
 ## Components Needed
 The components necessary for this project include:
-- A Raspberry Pi Zero 2 W (MUST be flashed with Raspberry Pi OS 32 Bit (Legacy), Debian Bullseye)
-- A 32GB SanDisk SDHC Class 10 Card
-- Piezo Buzzer
+- Raspberry Pi 4 (with 32GB SanDisk SDHC Class 10 card)
+- Piezo Buzzer 110 db
+- IRLZ44N Mosfet 
 - MPU-6050 (Accelerometer)
 - INIU BI-B61 Portable Charger 22.5W 10000mAh Power Bank
-- Raspberry Pi Camera Module V2
+- Raspberry Pi Camera Module V3 NoIR Wide
+- 12mm On/Off Metal Key Lock Switch
 - TP Link Router
 - Small Breadboard
 - Electrical Tape
 - Jumper cable
 - USB-C to micro USB cable
+- USB C Extension Cable 1ft, 1-Pack, USB C 3.2 Male to USB C Female Cable
+- 2-Pack 1.5ft Short Braided USB 3.0 A to A Cable - Male to Male
 - small heat sinks
+- 3D Printed Enclosure + lid
 
 <p align="center">
 <img src="./photos/components_overview.png" width="80%">
