@@ -1,5 +1,5 @@
 # Hardware Readme
-This read me will cover the hardware components of BikeGuard. Note to self for future: in the future we can try to implement everything with Python.
+This read me will cover the hardware components of BikeGuard. 
 
 ## Components Needed
 The components necessary for this project include:
