@@ -16,17 +16,56 @@
 bike-guard/
 ├── frontend/ # Frontend React application
 │ ├── public/ # Static assets
-│ ├── src/ # Source code (components, pages, etc.)
+│ ├── src/ # Source code
+│ │ ├──components
+│ │ │ ├──Account.css
+│ │ │ ├──Account.js
+│ │ │ ├──AuthForm.css
+│ │ │ ├──AuthForm.js
+│ │ │ ├──BikeLocation.js
+│ │ │ ├──BluetoothComponents.css
+│ │ │ ├──BluetoothComponents.js
+│ │ │ ├──CameraFeed.js
+│ │ │ ├──Components.css
+│ │ │ ├──LiveMap.css
+│ │ │ ├──LiveMap.js
+│ │ │ ├──Notifications.js
+│ │ │ ├──Settings.css
+│ │ │ ├──Settings.js
+│ │ │ ├──Support.css
+│ │ │ ├──Support.js
+│ │ ├──App.css
+│ │ ├──App.js
+│ │ ├──App.test.js
+│ │ ├──Status.js
+│ │ ├──config.js
+│ │ ├──firebase.js
+│ │ ├──index.css
+│ │ ├──index.js
+│ │ ├──logo.svg
+│ │ ├──reportWebVitals.js
+│ │ ├──service-worker.js
+│ │ ├──serviceWorkerRegistration.js
+│ │ ├──setupTests.js
 │ ├── package-lock.json
 │ ├── package.json
-│ ├── .firebase/ # Firebase configuration files
+│ ├── .firebaserc 
 │ ├── firebase.json
-│ └── implementation.txt # Implementation notes
+│ └── implementation.txt 
 │
 ├── backend/ # Backend application
 │ ├── app.py # Main backend logic
 │ ├── package-lock.json
-│ ├── package.json
+│ ├── node_modules
+│ │ ├── dotenv
+│ │ ├──lib
+│ │ │ ├──lCHANGELOG.md
+│ │ │ ├──lLICENSE
+│ │ │ ├──lREADME-es.md
+│ │ │ ├──lREADME.md
+│ │ │ ├──lconfig.d.ts
+│ │ │ ├──lconfig.js
+│ ├── package-lock.json
 │ └── database.db # SQLite database
 │
 ├── hardware/ # Hardware integration
