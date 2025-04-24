@@ -24,16 +24,14 @@ The components necessary for this project include:
 <img src="./photos/components_overview.png" width="50%">
 </p>
 <p align="center">
-  
-**Fig 1**: Hardware components overview
+__Fig 1__: Hardware components overview
 </p>
 
 <p align="center">
 <img src="./photos/hardware_actual.png" width="50%">
 </p>
 <p align="center">
-  
-**Fig 2**: Completed hardware before entering enclosure.
+__Fig 2__: Completed hardware before entering enclosure.
 </p>
 
 ## Set Up Explained
