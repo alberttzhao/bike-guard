@@ -41,7 +41,7 @@ Our hardware setup includes a Key Lock Switch, a  Raspberry Pi 4, a correspondin
 </p>
 
 <p align="center">  
-  <strong>Fig 3:</strong>: Hardware diagram
+  <strong>Fig 3:</strong> Hardware diagram
 </p>
 
 
@@ -55,7 +55,7 @@ Our hardware setup includes a Key Lock Switch, a  Raspberry Pi 4, a correspondin
 </p>
 
 <p align="center">  
-  <strong>Fig 4:</strong>: On Off switch
+  <strong>Fig 4:</strong> On Off switch
 </p>
 
 
