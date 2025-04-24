@@ -42,7 +42,7 @@ python app.py
 ```
 
 ### For Production and Testing
-To build the frontend for production or PWA testing:
+To build the frontend for production or PWA testing
 ```bash
 cd frontend
 npm run build
