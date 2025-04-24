@@ -24,7 +24,7 @@ The components necessary for this project include:
 <img src="./photos/components_overview.png" width="50%">
 </p>
 <p align="center">
-\bold{Fig 1}: Hardware components overview
+\bf{Fig 1}: Hardware components overview
 </p>
 
 <p align="center">
