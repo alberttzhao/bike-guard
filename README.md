@@ -3,7 +3,8 @@
 <p align="center">
 <img src="./photos/LogoRendition3.png" width="50%">
 </p>
-** BikeGuard ** is a smart anti-theft system for bicycles that provides live monitoring and real time alerts to detect suspicious activity and notify owners instantly.
+
+**BikeGuard** is a smart anti-theft system for bicycles that provides live monitoring and real time alerts to detect suspicious activity and notify owners instantly.
 
 
 ## Setup Instructions
