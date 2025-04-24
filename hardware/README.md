@@ -23,29 +23,15 @@ The components necessary for this project include:
 <table>
   <tr>
     <td align="center">
-      <img src="./photos/components_overview.png" width="300px"><br>
+      <img src="./photos/components_overview.png" width="400px"><br>
       <b>Fig 1: </b> Hardware components overview
     </td>
     <td align="center">
-      <img src="./photos/hardware_actual.png" width="300px"><br>
+      <img src="./photos/hardware_actual.png" width="400px"><br>
       <b>Fig 2:</b> Completed hardware before entering enclosure
     </td>
   </tr>
 </table>
-
-<p align="center">
-<img src="./photos/components_overview.png" width="50%">
-</p>
-<p align="center">
-  <strong>Fig 1:</strong> Hardware components overview
-</p>
-
-<p align="center">
-<img src="./photos/hardware_actual.png" width="50%">
-</p>
-<p align="center">
-  <strong>Fig 2:</strong> Completed hardware before entering enclosure.
-</p>
 
 ## Set Up Explained
 Our hardware setup includes a Key Lock Switch, a  Raspberry Pi 4, a corresponding Raspberry Pi Camera module V3 NoIR Wide, an accelerometer, and a buzzer. We use a router to establish our network within the broader BU wifi. We connected the Raspberry Pi to the network and are hosting all our servers on the network. We use SSH to access the Raspberry Pi remotely. We are powering the Raspberry PI with a portable power bank that is intended to charge phones and tablets. We additionally attached small heat sinks to our Raspberry Pi to prevent it from overheating. Once the Raspberry Pi is powered on, a boot_try.py script is automatically run. The boot_try.py script listens for GPIO signals from a Key Lock switch, which activates all of our software once the Key Lock is turned to the active position. This was implemented to save power. Our components are housed in a 3D printed enclosure attached to the bike with clamps. The accelerometer's data are saved in a CSV file using python libraries. In this manner, the data can be used to train the machine learning model to recognize possible bike theft. Once the pitch and roll reach a certain threshold while shaking, the buzzer goes off. Once the buzzer goes off it can be stopped through a button on the website. The backend file app.py receives constant information from the raspberry pi accelerometer.py folder. If the accelerometer detects motion greater than a pre-set threshold, it sends a push request to the backend and stores the message in the SQL database. Once the front end detects new changes in the database, it displays the most recent message on our website. As for the camera live view, the Raspberry Pi already has a module to convert real video feed into mpng (different format of png), then using flask we can stream the video feed directly to the front end. 
