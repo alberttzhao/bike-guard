@@ -27,7 +27,7 @@ function App() {
   
   // Bike data from the backend
   const [bikeData, setBikeData] = useState({
-    location: { lat: 37.7749, lng: -122.4194 }, // Default to San Francisco
+    location: { lat: 42.349, lng: -71.106 }, // Default to Photonics now
     battery: 100,
     is_locked: true,
     is_alarm_active: false,

@@ -140,7 +140,7 @@ def init_db():
         # Insert default bike status (San Francisco location)
         c.execute('''
             INSERT INTO bike_status (id, latitude, longitude, battery, is_locked, is_alarm_active)
-            VALUES (1, 37.7749, -122.4194, 100, 1, 0)
+            VALUES (1, 42.349, -71.106, 100, 1, 0)
         ''')
     
     conn.commit()
@@ -148,7 +148,7 @@ def init_db():
 
 # Bike data state (in-memory for quick access)
 bike_data = {
-    "location": {"lat": 37.7749, "lng": -122.4194},  # Default to San Francisco
+    "location": {"lat": 42.349, "lng": -71.106},  # Default to Photonics Boston
     "battery": 100,
     "is_locked": True,
     "is_alarm_active": False,
