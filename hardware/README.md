@@ -20,6 +20,10 @@ The components necessary for this project include:
 - small heat sinks
 - 3D Printed Enclosure + lid
 
+<p align="center">
+<img src="./photos/components_overview.png" width="80%">
+</p>
+
 
 
 ## Set Up Explained
