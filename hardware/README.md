@@ -51,7 +51,7 @@ Our hardware setup includes a Key Lock Switch, a  Raspberry Pi 4, a correspondin
 2. Switch key switch to ON (green color)
 
 <p align="center">
-<img src="./photos/on_off_switch.png" width="80%">
+<img src="./photos/on_off_switch.png" width="50%">
 </p>
 
 <p align="center">  
