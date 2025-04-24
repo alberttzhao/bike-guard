@@ -77,12 +77,7 @@ brew install python
 And then repeat all the necessary steps to setup front and backend
 
 ### Hardware Setup (Raspberry Pi)
-1. Activate the virtual environment and install dependencies (same as backend setup)
-2. Run the node script:
-```bash
-cd hardware
-node log_mpu_data.js
-```
+1. Switch the key lock switch from OFF to ON
 
 ## Project Structure
 ```
@@ -91,9 +86,9 @@ bike-guard/
 ├── backend/         # Flask server
 │   └── app.py      # Main server file
 ├── hardware/        # Raspberry Pi code
-│   └── log_mpu_data_.js
+│   └── boot_try.py
 │   └── accelerometer.py
-│   └── picam3.py
+│   └── mpu_data_log.csv
 ├── requirements.txt # Python dependencies
 └── README.md
 ```
@@ -105,7 +100,6 @@ bike-guard/
 
 ## Notes
 - You need Python 3.8+ installed
-- Raspberry Pi Camera module code written for Debian Bullseye Raspberry Pi OS
 
 # BikeGuard - Development Setup
 
