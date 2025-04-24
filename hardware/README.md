@@ -20,9 +20,7 @@ The components necessary for this project include:
 - small heat sinks
 - 3D Printed Enclosure + lid
 
-<p align="center">
-<img src="./photos/components_overview.png" width="80%">
-</p>
+
 
 ## Set Up Explained
 Our hardware setup includes a Raspberry Pi Zero 2 W, a corresponding Raspberry Pi Camera, an accelerometer, and a buzzer. We use a router to establish our own network within the broader BU wifi. We connected the Raspberry Pi to the network and are hosting all our servers on the network. We use SSH to access the Raspberry Pi remotely. We are powering the Raspberry PI with a portable power bank that is intended to charge phones and tablets. We additionally attached small heat sinks to our Raspberry Pi. Our components are in a lock box attached to the bike. The accelerometer's data are saved in a CSV file utilizing a node.js code. In this manner, the data can be used to train the machine learning model to classify possible bike theft. Once the pitch and roll reach a certain threshold while shaking, the buzzer goes off. The backend file app.py receives constant information from the raspberry pi accelerometer.py folder. If the accelerometer detects motion greater than a pre-set threshold, it sends a push request to the backend and stores the message in the SQL database. Once the front end detects new changes in the database, it displays the most recent message on our website. As for the camera live view, the Raspberry Pi already has a module to convert real video feed into mpng (different format of png), then using flask we can stream the video feed directly to the front end. 
