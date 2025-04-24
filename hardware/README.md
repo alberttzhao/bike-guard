@@ -24,14 +24,14 @@ The components necessary for this project include:
 <img src="./photos/components_overview.png" width="50%">
 </p>
 <p align="center">
-\bf{Fig 1}: Hardware components overview
+Fig 1: Hardware components overview
 </p>
 
 <p align="center">
 <img src="./photos/hardware_actual.png" width="50%">
 </p>
 <p align="center">
-__Fig 2__: Completed hardware before entering enclosure.
+Fig 2: Completed hardware before entering enclosure.
 </p>
 
 ## Set Up Explained
@@ -41,8 +41,7 @@ Our hardware setup includes a Key Lock Switch, a  Raspberry Pi 4, a correspondin
 <img src="./photos/hardware_diagram.png" width="80%">
 </p>
 
-<p align="center">
-  
+<p align="center">  
 **Fig 3**: Hardware diagram
 </p>
 
@@ -61,8 +60,7 @@ Figure 4 shows the onboard software flow chart. The Python script boot_try.py is
 </p>
 
 <p align="center">
-  
-**Fig 4**: Onboard software flow chart
+  <strong>Fig 4:</strong> Onboard software flow chart
 </p>
 
 
