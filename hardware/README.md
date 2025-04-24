@@ -21,9 +21,13 @@ The components necessary for this project include:
 - 3D Printed Enclosure + lid
 
 <p align="center">
-<img src="./photos/components_overview.png" width="80%">
+<img src="./photos/components_overview.png" width="50%">
 </p>
 
+<p align="center">
+<img src="./photos/hardware_actual.png" width="50%">
+</p>
+Completed hardware before entering enclosure.
 
 
 ## Set Up Explained
