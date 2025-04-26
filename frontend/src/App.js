@@ -595,10 +595,11 @@ function App() {
               {currentPage === 'dashboard' ? (
                 <>
                   <div className="content-grid">
-                    <CameraFeed />
+                    <CameraFeed userData={userData}/>
                     <LiveMap 
                       bikeLocation={bikeData.location} 
                       isTracking={isTracking}
+                      userData={userData}
                       isAlarmActive={bikeData.is_alarm_active}
                     />
                   </div>

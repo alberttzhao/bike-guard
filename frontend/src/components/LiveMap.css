@@ -95,3 +95,26 @@
     animation: none;
     background-color: rgba(220, 53, 69, 0.3);
   }
+
+  .map-unauthorized {
+    height: 100%;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    background-color: #f8f9fa;
+    color: #6c757d;
+    text-align: center;
+    padding: 20px;
+  }
+  
+  .map-unauthorized .material-icons {
+    font-size: 48px;
+    margin-bottom: 16px;
+    color: #dc3545;
+  }
+  
+  .map-unauthorized p {
+    font-size: 16px;
+    margin: 0;
+  }
