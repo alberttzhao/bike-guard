@@ -88,6 +88,7 @@ def stop_script():
     #lgpio.gpio_write(h, BUZZER_GPIO, 0)
 
 try:
+    print("ciao1")
     last_state = lgpio.gpio_read(h, SWITCH_GPIO)
     while True:
         current_state = lgpio.gpio_read(h, SWITCH_GPIO)
@@ -99,6 +100,8 @@ try:
             last_state = current_state
         time.sleep(0.1)
 except KeyboardInterrupt:
+    print("ciao2")
     stop_script()
 finally:
+    print("ciao3")
     lgpio.gpiochip_close(h)
