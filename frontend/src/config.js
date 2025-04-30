@@ -84,18 +84,18 @@ const getBackendUrl = (serviceType = 'default') => {
   if (window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1') {
     // Camera always uses Pi's IP
     if (serviceType === 'camera') {
-      return 'http://128.197.180.214:5001';
+      return 'http://128.197.180.187:5001';
     }
     // Notifications use localhost
     if (serviceType === 'notifications') {
       return 'http://localhost:5001';
     }
     // Default (alarms, etc.) uses Pi's IP
-    return 'http://128.197.180.214:5001';
+    return 'http://128.197.180.187:5001';
   }
   
   // For production or direct Pi access
-  return 'http://128.197.180.214:5001';
+  return 'http://128.197.180.187:5001';
 };
 
 export const CONFIG = {

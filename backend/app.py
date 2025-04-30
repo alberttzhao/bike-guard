@@ -83,8 +83,8 @@ CORS(app, resources={
             "http://192.168.*",
             "http://10.*",
             "https://bike-guard-2025.web.app",
-            "http://128.197.180.214:3000",
-            "http://128.197.180.214:5001"
+            "http://128.197.180.187:3000",
+            "http://128.197.180.187:5001"
         ],
         "methods": ["GET", "POST", "PUT", "DELETE"],
         "allow_headers": ["Content-Type", "Authorization"]
@@ -341,7 +341,7 @@ def store_notification_in_firebase(notification_data, user_id=None):
 def video_feed():
     # Return the actual video feed URL
     return jsonify({
-        "videoUrl": "http://128.197.180.214:5001/api/video-feed"  # Adjust to your actual video endpoint
+        "videoUrl": "http://128.197.180.187:5001/api/video-feed"  # Adjust to your actual video endpoint
     })
 
 # Location tracking endpoints
