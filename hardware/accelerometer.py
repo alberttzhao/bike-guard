@@ -49,12 +49,7 @@ picam2.start()
 buzzer_pin = 17 
 GPIO.setmode(GPIO.BCM)
 GPIO.setup(buzzer_pin, GPIO.OUT)
-# h = lgpio.gpiochip_open(0)  # Open GPIO chip 0
-# BUZZER_PIN = 17
-# lgpio.gpio_claim_output(h, BUZZER_PIN, 0)  # Set to LOW
 
-# def control_buzzer(state):
-#     lgpio.gpio_write(h, BUZZER_PIN, state)
 
 def control_buzzer(state):
     GPIO.output(buzzer_pin, state)
