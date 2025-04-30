@@ -46,12 +46,12 @@ picam2 = Picamera2()
 picam2.configure(picam2.create_video_configuration(main={"size": (640, 480)}))
 picam2.start()
 
-# buzzer_pin = 17 
-# GPIO.setmode(GPIO.BCM)
-# GPIO.setup(buzzer_pin, GPIO.OUT)
-h = lgpio.gpiochip_open(0)  # Open GPIO chip 0
-BUZZER_PIN = 17
-lgpio.gpio_claim_output(h, BUZZER_PIN, 0)  # Set to LOW
+buzzer_pin = 17 
+GPIO.setmode(GPIO.BCM)
+GPIO.setup(buzzer_pin, GPIO.OUT)
+# h = lgpio.gpiochip_open(0)  # Open GPIO chip 0
+# BUZZER_PIN = 17
+# lgpio.gpio_claim_output(h, BUZZER_PIN, 0)  # Set to LOW
 
 def control_buzzer(state):
     lgpio.gpio_write(h, BUZZER_PIN, state)
