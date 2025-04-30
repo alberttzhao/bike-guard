@@ -16,7 +16,7 @@ def start_script():
     global process
     if process is None:
         print("Switch ON - starting accelerometer.py...")
-        process = subprocess.Popen(["python3", "/home/Prova/bike-guard/hardware/accelerometer.py"])
+        process = subprocess.Popen(["sudo","python3", "/home/Prova/bike-guard/hardware/accelerometer.py"])
     else:
         print("Script is already running.")
 
