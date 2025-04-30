@@ -60,7 +60,7 @@ BUZZER_GPIO = 17
 
 h = lgpio.gpiochip_open(0)
 lgpio.gpio_claim_input(h, SWITCH_GPIO)
-lgpio.gpio_claim_output(h, BUZZER_GPIO, 0)
+#lgpio.gpio_claim_output(h, BUZZER_GPIO, 0)
 
 process = None
 
@@ -84,7 +84,7 @@ def stop_script():
             process.kill()
         process = None
     # Turn off buzzer
-    lgpio.gpio_write(h, BUZZER_GPIO, 0)
+    #lgpio.gpio_write(h, BUZZER_GPIO, 0)
 
 try:
     last_state = lgpio.gpio_read(h, SWITCH_GPIO)
