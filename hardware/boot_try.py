@@ -66,6 +66,7 @@ print("ciao")
 process = None
 
 def start_script(): 
+    print("Script started1") 
     global process
     if process is None:
         print("Switch ON - starting accelerometer.py...")
@@ -74,6 +75,7 @@ def start_script():
         print("Script is already running.")
 
 def stop_script():
+    print("Script started2") 
     global process
     if process:
         print("Switch OFF - stopping accelerometer.py...")
