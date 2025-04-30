@@ -19,6 +19,7 @@ from flask import Flask, Response
 from picamera2 import Picamera2
 from io import BytesIO
 from PIL import Image
+import lgpio #added by marghe muight be wrong
 
 
 # threading
@@ -45,12 +46,18 @@ picam2 = Picamera2()
 picam2.configure(picam2.create_video_configuration(main={"size": (640, 480)}))
 picam2.start()
 
-buzzer_pin = 17 
-GPIO.setmode(GPIO.BCM)
-GPIO.setup(buzzer_pin, GPIO.OUT)
+# buzzer_pin = 17 
+# GPIO.setmode(GPIO.BCM)
+# GPIO.setup(buzzer_pin, GPIO.OUT)
+h = lgpio.gpiochip_open(0)  # Open GPIO chip 0
+BUZZER_PIN = 17
+lgpio.gpio_claim_output(h, BUZZER_PIN, 0)  # Set to LOW
 
 def control_buzzer(state):
-    GPIO.output(buzzer_pin, state)
+    lgpio.gpio_write(h, BUZZER_PIN, state)
+
+# def control_buzzer(state):
+#     GPIO.output(buzzer_pin, state)
 
 
 def generate_frames():
