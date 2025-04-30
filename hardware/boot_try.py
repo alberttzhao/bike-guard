@@ -61,10 +61,11 @@ BUZZER_GPIO = 17
 h = lgpio.gpiochip_open(0)
 lgpio.gpio_claim_input(h, SWITCH_GPIO)
 #lgpio.gpio_claim_output(h, BUZZER_GPIO, 0)
+print("ciao")
 
 process = None
 
-def start_script():
+def start_script(): 
     global process
     if process is None:
         print("Switch ON - starting accelerometer.py...")
