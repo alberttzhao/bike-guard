@@ -53,11 +53,11 @@ GPIO.setup(buzzer_pin, GPIO.OUT)
 # BUZZER_PIN = 17
 # lgpio.gpio_claim_output(h, BUZZER_PIN, 0)  # Set to LOW
 
-def control_buzzer(state):
-    lgpio.gpio_write(h, BUZZER_PIN, state)
-
 # def control_buzzer(state):
-#     GPIO.output(buzzer_pin, state)
+#     lgpio.gpio_write(h, BUZZER_PIN, state)
+
+def control_buzzer(state):
+    GPIO.output(buzzer_pin, state)
 
 
 def generate_frames():
