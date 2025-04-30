@@ -95,6 +95,7 @@ try:
     while True:
         current_state = lgpio.gpio_read(h, SWITCH_GPIO)
         if current_state != last_state:
+            print("I get here")
             if current_state == 0:
                 start_script()
             else:
